@@ -72,6 +72,15 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 }
 	     };
 
+	     var isEmpty = function(o) {
+		 for (var p in o) {
+		     if (o.hasOwnProperty(p)) {
+			 return false;
+		     }
+		 }
+		 return true;
+	     };
+
 	     query('.md-close').on('click', function(e) {
 		 query('.md-modal').removeClass('md-show');
 	     });
@@ -167,6 +176,28 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			     panelOrder['panel-calculate-button']['previous'] =
 			     'panel-sensitivity-required';
 		     }
+		 }
+		 if (myId === 'interactive-sensitivity-weather-best' ||
+		     myId === 'interactive-sensitivity-weather-typical' ||
+		     myId === 'interactive-sensitivity-weather-worst' ||
+		     myId === 'data-sensitivity-weather-best' ||
+		     myId === 'data-sensitivity-weather-typical' ||
+		     myId === 'data-sensitivity-weather-worst') {
+		     // Set which value should be shown in the return panels.
+		     var showVal = 0;
+		     if (/best$/.test(myId)) {
+			 showVal = 0;
+		     } else if (/typical$/.test(myId)) {
+			 showVal = 1;
+		     } else if (/worst$/.test(myId)) {
+			 showVal = 2;
+		     }
+		     resultsIds['results-summary-continuum-sensitivity-surfacebrightness'][3] = showVal;
+		     resultsIds['results-summary-continuum-sensitivity-sensitivity'][3] = showVal;
+		     resultsIds['results-summary-spectral-sensitivity-surfacebrightness'][3] = showVal;
+		     resultsIds['results-summary-spectral-sensitivity-sensitivity'][3] = showVal;
+		     resultsIds['results-summary-zoom-sensitivity-surfacebrightness'][3] = showVal;
+		     resultsIds['results-summary-zoom-sensitivity-sensitivity'][3] = showVal;
 		 }
 		 if (myId === 'data-cabb-zoomfreq' ||
 		     myId === 'interactive-cabb-spectralfreq') {
@@ -500,18 +531,18 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'source_imaging', 'weighting_scheme' ],
 		 'results-summary-continuum-integration-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   'continuum', 0 ],
+		   'continuum', 1 ],
 		 'results-summary-continuum-integration-sensitivity':
-		 [ 'sensitivities', 'rms_noise_level', 'continuum', 0 ],
+		 [ 'sensitivities', 'rms_noise_level', 'continuum', 1 ],
 		 'results-summary-continuum-sensitivity-centralfreq':
 		 [ 'parameters', 'central_frequency' ],
 		 'results-summary-continuum-sensitivity-weighting':
 		 [ 'source_imaging', 'weighting_scheme' ],
 		 'results-summary-continuum-sensitivity-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   'continuum', 0 ],
+		   'continuum', 1 ],
 		 'results-summary-continuum-sensitivity-sensitivity':
-		 [ 'sensitivities', 'rms_noise_level', 'continuum', 0 ],
+		 [ 'sensitivities', 'rms_noise_level', 'continuum', 1 ],
 		 'results-summary-continuum-sensitivity-time':
 		 [ 'source_imaging', 'integration_time' ],
 
@@ -526,9 +557,9 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'continuum', 'spectral_channel_resolution'],
 		 'results-summary-spectral-integration-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   'spectral', 0 ],
+		   'spectral', 1 ],
 		 'results-summary-spectral-integration-sensitivity':
-		 [ 'sensitivities', 'rms_noise_level', 'spectral', 0 ],
+		 [ 'sensitivities', 'rms_noise_level', 'spectral', 1 ],
 		 'results-summary-spectral-sensitivity-centralfreq':
 		 [ 'parameters', 'central_frequency' ],
 		 'results-summary-spectral-sensitivity-weighting':
@@ -557,10 +588,10 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ [ 'specific_zoom', 'zoom' ], 'spectral_channel_resolution'],
 		 'results-summary-zoom-integration-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   [ 'specific_zoom', 'zoom' ], 0 ],
+		   [ 'specific_zoom', 'zoom' ], 1 ],
 		 'results-summary-zoom-integration-sensitivity':
 		 [ 'sensitivities', 'rms_noise_level', 
-		   [ 'specific_zoom', 'zoom' ], 0 ],
+		   [ 'specific_zoom', 'zoom' ], 1 ],
 		 'results-summary-zoom-sensitivity-nzooms':
 		 [ [ 'specific_zoom', 'zoom' ], 'n_zooms' ],
 		 'results-summary-zoom-sensitivity-centralfreq':
@@ -584,7 +615,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-array-nbaselines':
 		 [ 'parameters', 'n_baselines' ],
 		 'results-array-longestbaseline':
-		 [ 'parameters', 'configuration' ],
+		 [ 'source_imaging', 'maximum_baseline_length' ],
 		 'results-array-efficiency':
 		 [ 'parameters', 'antenna_efficiency' ],
 		 'results-array-systemtemperature-bestweather':
@@ -751,6 +782,11 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			     }
 			 }
 			 // console.log(rId + ' = ' + t);
+
+			 // Check for robust return values.
+			 if (/^R.{1,2}$/.test(t)) {
+			     t = t.replace("R", "Robust=")
+			 }
 			 
 			 if (t instanceof Array) {
 			     t = t.join(' x ');
@@ -851,6 +887,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     pack['integration'] = domAttr.get('data-integration', 'value');
 		 } else if (opMode === 'Sensitivity') {
 		     pack['target'] = domAttr.get('data-sensitivity', 'value');
+		     pack['calculate_time'] = true;
 		     
 		     targetBand = query('[name="data-sensitivity-mode"]:checked').val();
 		     if (targetBand === 'zoom' && pack['zoomfreq']) {
@@ -873,7 +910,9 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			 pack['target_flux_density'] = true
 		     }
 		 }
-		 pack['ca06'] = (dom.byId('data-include-ca06').checked);
+		 if (dom.byId('data-include-ca06').checked) {
+		     pack['ca06'] = true;
+		 }
 		 pack['smoothing'] = domAttr.get('data-smoothing', 'value');
 		 pack['zoom_width'] = domAttr.get('data-nzooms', 'value');
 		 tmpVal = domAttr.get('data-rest-frequency', 'value');
@@ -884,8 +923,12 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     }
 		     pack['restfreq'] = tmpVal;
 		 }
-		 pack['birdies'] = (dom.byId('data-remove-birdies').checked);
-		 pack['rfi'] = (dom.byId('data-remove-rfi').checked);
+		 if (dom.byId('data-remove-birdies').checked) {
+		     pack['birdies'] = true;
+		 }
+		 if (dom.byId('data-remove-rfi').checked) {
+		     pack['rfi'] = true;
+		 }
 		 tmpVal = domAttr.get('data-remove-edge', 'value');
 		 if (tmpVal > 0) {
 		     pack['edge'] = tmpVal;

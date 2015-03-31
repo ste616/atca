@@ -271,6 +271,11 @@ def main(args):
     # The synthesised beam size weighting factor.
     sens.addToOutput(output, 'source_imaging', 'beam_weighting_factor', imageWeights['beam'],
                 "Synthesised beam weighting factor", None)
+    # The maximum baseline length for imaging.
+    mbl = "%.0f" % (math.sqrt(maxBaselineLength['dX'] ** 2 + maxBaselineLength['dY'] ** 2 +
+                              maxBaselineLength['dZ'] ** 2))
+    sens.addToOutput(output, 'source_imaging', 'maximum_baseline_length', mbl,
+                     "Maximum Baseline Length", "m")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -902,7 +907,8 @@ def main(args):
                     "Brightness Temperature Sensitivity", "mK")
     # The integration time is added now, since it may have changed if the user asked for a
     # particular sensitivity target.
-    sens.addToOutput(output, 'source_imaging', 'integration_time', args.integration,
+    inttime = "%.0f" % args.integration
+    sens.addToOutput(output, 'source_imaging', 'integration_time', inttime,
                 "Time on Source", "minutes")
 
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\

@@ -250,7 +250,7 @@ def synthesisedBeamSize(freq, baselineLength, dec, minHa, maxHa, weightFactor):
     # convert to arcseconds and multiply by the image weighting factor.
     ures = math.degrees(1.0 / umax) * degreesToArcsec * weightFactor
     # Check for zero vmax, which occurs when observing a source on the
-    # celestial equator withouth NS baselines.
+    # celestial equator without NS baselines.
     try:
         vres = math.degrees(1.0 / vmax) * degreesToArcsec * weightFactor
     except ZeroDivisionError:
