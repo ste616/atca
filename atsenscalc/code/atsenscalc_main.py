@@ -171,7 +171,7 @@ def main(args):
         if (args.human_readable):
             print "FATAL: ", c.value
         else:
-            print '{ error: "%s" }' % c.value
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
 
     # The number of antenna and baselines.
@@ -209,7 +209,10 @@ def main(args):
         imageWeights = sens.weightingFactor(args.weighting, args.configuration, args.ca06)
     except sens.CalcError:
         _, c, _ = sys.exc_info()
-        print "FATAL: ", c.value
+        if (args.human_readable):
+            print "FATAL: ", c.value
+        else:
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
 
     # Get the lengths of the baselines and determine the maximum baseline length.
@@ -217,7 +220,10 @@ def main(args):
         baselineLengths = sens.maximumBaseline(args.configuration)
     except sens.CalcError:
         _, c, _ = sys.exc_info()
-        print "FATAL: ", c.value
+        if (args.human_readable):
+            print "FATAL: ", c.value
+        else:
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
     maxBaselineLength = baselineLengths['track']
     if (args.ca06):
@@ -317,7 +323,10 @@ def main(args):
         cacheTsys = sens.readTsys(sens.frequencyBands[b]['tsys'], lowGlobalFreq, highGlobalFreq)
     except sens.CalcError:
         _, c, _ = sys.exc_info()
-        print "FATAL: ", c.value
+        if (args.human_readable):
+            print "FATAL: ", c.value
+        else:
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
     # Use the raw Tsys to fill in the required templates.
     sens.templateFill(cacheTsys, workArea['continuum'])
@@ -424,7 +433,10 @@ def main(args):
                 "Smoothing Window", "channels")
     # Check that we will end up with at least 2 channels, otherwise we die.
     if ((sens.continuumBandwidth / contSmoothRes) < 2):
-        print "FATAL: Smoothing factor too large."
+        if (args.human_readable):
+            print "FATAL: Smoothing factor too large."
+        else:
+            print '{ "error": "Smoothing factor too large." }'
         sys.exit(-1)
     # Make the smoothed templates and fill them from the unsmoothed templates.
     workArea['continuum-smooth'] = sens.makeTemplate(args.frequency, sens.continuumBandwidth, contSmoothRes)
@@ -449,7 +461,10 @@ def main(args):
                     "Channel Bandwidth", "MHz")
     # We don't want to smooth too much in the zooms either, so we check for that now.
     if ((workArea['resolutions']['continuum'] / zoomSmoothRes) < 2):
-        print "FATAL: Zoom smoothing factor too large."
+        if (args.human_readable):
+            print "FATAL: Zoom smoothing factor too large."
+        else:
+            print '{ "error": "Zoom smoothing factor too large." }'
         sys.exit(-1)
 
     if (specificZoomCalc):
@@ -487,11 +502,20 @@ def main(args):
     ####################################################################################################
     # Calculate the properties of the synthesised beam.
     # Synthesised beam for the continuum central frequency.
-    synthBeamContinuum = sens.synthesisedBeamSize(args.frequency, maxBaselineLength, args.dec, hourAngle_min,
-                                hourAngle_max, imageWeights['beam'])
+    try:
+        synthBeamContinuum = sens.synthesisedBeamSize(args.frequency, maxBaselineLength, args.dec, hourAngle_min,
+                                                      hourAngle_max, imageWeights['beam'])
+    except ZeroDivisionError:
+        if (args.human_readable):
+            print "FATAL: Cannot observe a declination 0 source with an EW array."
+        else:
+            print '{ "error": "Cannot observe a declination 0 source with an EW array." }'
+        sys.exit(-1)
     sens.addToOutput(output, 'source_imaging', 'synthesised_beam_size', synthBeamContinuum,
                 "Synthesised Beam Size (FWHM)", "arcsec")
-    # The sizes at the high and low frequencies of the continuum band.
+
+    # The sizes at the high and low frequencies of the continuum band. We no longer check for
+    # the returning ZeroDivisionError because if it was going to happen, it would have already happened.
     synthBeamLowFreq = sens.synthesisedBeamSize(lowestFreq, maxBaselineLength, args.dec, hourAngle_min,
                                            hourAngle_max, imageWeights['beam'])
     synthBeamHighFreq = sens.synthesisedBeamSize(highestFreq, maxBaselineLength, args.dec, hourAngle_min,
@@ -733,7 +757,10 @@ def main(args):
             sensResSmooth = sens.calculateSensitivity(workArea['continuum-smooth-rms'][condition], nant)
             # Check whether we have any unflagged continuum channels.
             if (sensResSmooth['bandwidth']['unflagged'] < 1.0):
-                print "FATAL: No continuum bandwidth remains unflagged."
+                if (args.human_readable):
+                    print "FATAL: No continuum bandwidth remains unflagged."
+                else:
+                    print '{ "error": "No continuum bandwidth remains unflagged." }'
                 sys.exit(-1)
 
             # We get the "general" zoom sensitivity from the unsmoothed continuum data, since smoothing

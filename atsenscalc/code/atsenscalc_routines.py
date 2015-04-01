@@ -249,13 +249,9 @@ def synthesisedBeamSize(freq, baselineLength, dec, minHa, maxHa, weightFactor):
     # The resolution is simply the inverse of umax or vmax, but we also
     # convert to arcseconds and multiply by the image weighting factor.
     ures = math.degrees(1.0 / umax) * degreesToArcsec * weightFactor
-    # Check for zero vmax, which occurs when observing a source on the
-    # celestial equator without NS baselines.
-    try:
-        vres = math.degrees(1.0 / vmax) * degreesToArcsec * weightFactor
-    except ZeroDivisionError:
-        print "FATAL: Cannot observe a declination 0 source with an EW array"
-        sys.exit(-1)
+    # This next line will trigger a ZeroDivisionError if the source is
+    # on the celestial equator and we're in an EW array.
+    vres = math.degrees(1.0 / vmax) * degreesToArcsec * weightFactor
 
     # We now take care of significant figures.
     utmp = "%.2f" % ures
