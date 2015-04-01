@@ -774,6 +774,14 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 	     };
 	     var gotResults = function(data) {
 		 //console.log(data);
+		 // Check for an error coming from the calculator.
+		 if ("error" in data) {
+		     domAttr.set("model-calculator-error-content", "innerHTML",
+				 data.error);
+		     showAlert("modal-calculator-error");
+		     return;
+		 }
+
 		 // Populate the results pages.
 		 for (var rId in resultsIds) {
 		     if (resultsIds.hasOwnProperty(rId)) {
