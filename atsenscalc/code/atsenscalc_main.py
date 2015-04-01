@@ -357,6 +357,9 @@ def main(args):
                    (workArea['resolutions']['continuum'] / 2))
     sens.addToOutput(output, 'continuum', 'frequency_range', [ lowestFreq, highestFreq ],
                 "Continuum Band Frequency Range", "MHz")
+    sens.addToOutput(output, 'zoom', 'n_zooms', args.zoom_width,
+                     "Number of concatenated zoom channels", "channels")
+    sens.addToOutput(output, 'parameters', 'zoom_frequency', args.frequency, "Zoom Frequency", "MHz")
     if (specificZoomCalc):
         # Get the lowest and highest frequencies.
         szoomLowestFreq = (workArea['specificZoom']['centreFrequency'][args.zoom_edge] -

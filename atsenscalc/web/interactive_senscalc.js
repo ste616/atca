@@ -1,10 +1,10 @@
 require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Memory',
 	   'dijit/form/ComboBox', 'dojo/dom-class', 'dojo/_base/fx', 'dojo/dom-style',
 	   'dojo/fx', 'dojo/dom-construct', 'dojo/request/xhr', 'atnf/base',
-	   'dojo/dom-geometry',
+	   'dojo/dom-geometry', "dojo/_base/lang",
 	   'dojo/NodeList-manipulate', 'dojo/NodeList-dom', 'dojo/domReady!' ],
 	 function(dom, domAttr, on, query, Memory, ComboBox, domClass, fx, domStyle, 
-		  coreFx, domConstruct, xhr, atnf, domGeom) {
+		  coreFx, domConstruct, xhr, atnf, domGeom, lang) {
 
 	     var linkedElements = [
 		 // Text input elements.
@@ -79,6 +79,31 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     }
 		 }
 		 return true;
+	     };
+
+	     var appendStrings = function(a, b) {
+		 ra = []
+		 if (a.length == 0) {
+		     if (b instanceof Array) {
+			 for (var j = 0; j < b.length; j++) {
+			     ra.push(b[j]);
+			 }
+		     } else {
+			 ra.push(b);
+		     }
+		 } else {
+		     for (var i = 0; i < a.length; i++) {
+			 if (b instanceof Array) {
+			     for (var j = 0; j < b.length; j++) {
+				 ra.push(a[i] + '.' + b[j])
+			     }
+			 } else {
+			     ra.push(a[i] + '.' + b)
+			 }
+		     }
+		 }
+
+		 return ra;
 	     };
 
 	     query('.md-close').on('click', function(e) {
@@ -748,24 +773,21 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 
 	     };
 	     var gotResults = function(data) {
-		 console.log(data);
+		 //console.log(data);
 		 // Populate the results pages.
 		 for (var rId in resultsIds) {
 		     if (resultsIds.hasOwnProperty(rId)) {
 			 var t = data;
 			 var tu = '';
+			 var corder = []
+			 var cindex = -1;
 			 for (var i = 0; i < resultsIds[rId].length; i++) {
-			     if (resultsIds[rId][i] instanceof Array) {
-				 for (var j = 0; j < resultsIds[rId][i].length; j++) {
-				     if (typeof t[resultsIds[rId][i][j]] !== 'undefined' &&
-					 t[resultsIds[rId][i][j]] !== 0) {
-					 t = t[resultsIds[rId][i][j]];
-					 break;
-				     }
-				 }
+			     if (!atnf.isNumeric(resultsIds[rId][i])) {
+				 corder = appendStrings(corder, resultsIds[rId][i]);
 			     } else {
-				 t = t[resultsIds[rId][i]];
+				 cindex = resultsIds[rId][i];
 			     }
+			     
 			     if (!atnf.isNumeric(resultsIds[rId][i])) {
 				 if (resultsIds[rId][i] instanceof Array) {
 				     for (var j = 0; j < resultsIds[rId][i].length; j++) {
@@ -781,6 +803,20 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 				 }
 			     }
 			 }
+			 for (var i = 0; i < corder.length; i++) {
+			     if (lang.exists(corder[i], data)) {
+				 t = lang.getObject(corder[i], false, data);
+				 console.log(t);
+				 if (cindex > -1) {
+				     t = t[cindex];
+				 }
+				 break;
+			     } else {
+				 console.log("not found!");
+				 t = null;
+			     }
+			 }
+
 			 // console.log(rId + ' = ' + t);
 
 			 // Check for robust return values.
