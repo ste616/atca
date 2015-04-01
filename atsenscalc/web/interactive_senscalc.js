@@ -741,13 +741,13 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-zoom-centralfrequency':
 		 [ 'parameters', [ 'zoom_frequency', 'central_frequency' ] ],
 		 'results-zoom-effectivebandwidth':
-		 [ [ 'specific_zoom', 'zoom' ], 'zoom_total_bandwidth' ],
+		 [ [ 'specific_zoom', 'zoom' ], 'effective_bandwidth' ],
 		 'results-zoom-frequencyresolution':
-		 [ [ 'specific_zoom', 'zoom' ], 'zoom_channel_bandwidth' ],
+		 [ [ 'specific_zoom', 'zoom' ], 'channel_bandwidth' ],
 		 'results-zoom-cubeplanes':
 		 [ [ 'specific_zoom', 'zoom' ], 'n_channels' ],
 		 'results-zoom-velocitywidth':
-		 [ [ 'specific_zoom', 'zoom' ], 'zoom_total_spectral_bandwidth' ],
+		 [ [ 'specific_zoom', 'zoom' ], 'spectral_bandwidth' ],
 		 'results-zoom-velocityresolution':
 		 [ [ 'specific_zoom', 'zoom' ], 'spectral_channel_resolution' ],
 		 'results-zoom-restfrequency':
@@ -806,13 +806,11 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			 for (var i = 0; i < corder.length; i++) {
 			     if (lang.exists(corder[i], data)) {
 				 t = lang.getObject(corder[i], false, data);
-				 console.log(t);
 				 if (cindex > -1) {
 				     t = t[cindex];
 				 }
 				 break;
 			     } else {
-				 console.log("not found!");
 				 t = null;
 			     }
 			 }

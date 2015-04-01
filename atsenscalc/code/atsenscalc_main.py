@@ -439,11 +439,13 @@ def main(args):
     zoomSmoothRes = workArea['resolutions']['zoom'] * float(args.zoom_smoothing)
     sens.addToOutput(output, 'source_imaging', 'zoom_smoothing_window', args.zoom_smoothing,
                 "Zoom Smoothing Window", "channels")
-    sens.addToOutput(output, 'zoom', 'channel_bandwidth', zoomSmoothRes,
+    # The channel bandwidth goes to integer Hz.
+    chbw = "%.6f" % zoomSmoothRes
+    sens.addToOutput(output, 'zoom', 'channel_bandwidth', chbw,
                 "Channel Bandwidth", "MHz")
     if (specificZoomCalc):
         # The specific zoom will have the exact same frequency resolution.
-        sens.addToOutput(output, 'specific_zoom', 'channel_bandwidth', zoomSmoothRes,
+        sens.addToOutput(output, 'specific_zoom', 'channel_bandwidth', chbw,
                     "Channel Bandwidth", "MHz")
     # We don't want to smooth too much in the zooms either, so we check for that now.
     if ((workArea['resolutions']['continuum'] / zoomSmoothRes) < 2):
@@ -551,7 +553,8 @@ def main(args):
     # The zoom velocity width is then just the velocity resolution of each channel multiplied
     # by the number of non-edge channels.
     zoomSpecBandwidth = zoomRes * float(nZoomVelChans)
-    sens.addToOutput(output, 'zoom', 'spectral_bandwidth', zoomSpecBandwidth, "Spectral Bandwidth", "km/s")
+    zsb = "%.3f" % zoomSpecBandwidth
+    sens.addToOutput(output, 'zoom', 'spectral_bandwidth', zsb, "Spectral Bandwidth", "km/s")
 
     if (specificZoomCalc == True):
         # We can actually calculate real velocity values for the specific zoom band, so we
