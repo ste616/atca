@@ -782,6 +782,14 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 	     var gotResults = function(data) {
 		 // Close the loading dialog.
 		 query('#modal-loading').removeClass('md-show');
+		 // Hide any messages that have popped up.
+		 query('#loading-long').addClass('md-hidden-message');
+		 query('#fountainG').addClass('md-hidden-message');
+		 query('#loading-too-long').addClass('md-hidden-message');
+		 query('#loading-too-long-close').addClass('md-hidden-message');
+		 // Stop the timers.
+		 loadTimer1.stop();
+		 loadTimer2.stop();
 		 
 		 //console.log(data);
 		 // Check for an error coming from the calculator.
