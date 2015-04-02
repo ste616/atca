@@ -138,18 +138,21 @@
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
-		The furthest hour-angle you will observe your source at (an
+		The hour-angle range you will observe your source over (an
 		hour angle of 0 is at transit, when the source is at its
 		highest elevation). Observing over a larger range of HA will
 		result in improved uv-coverage, but may mean observing at
 		lower elevations.
 	      </p>
-	      HA Limit:
+	      HA Limits:
 	    </div>
 	  </th>
-	  <td><input type="text" class="topcoat-text-input" placeholder="hour-angle"
-		     value="6" name="data-hourangle-limit" id="data-hourangle-limit" size="10">
-	    <label for="data-hourangle-limit"> hours</label></td></tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="min"
+		     value="-6" name="data-hourangle-limit-min" id="data-hourangle-limit-min" size="3">
+	    <label for="data-hourangle-limit-min">(min) to (max)</label>
+	    <input type="text" class="topcoat-text-input" placeholder="max"
+		   value="6" name="data-hourangle-limit-max" id="data-hourangle-limit-max" size="3">
+	    <label for="data-hourangle-limit-max"> hours</label></td></tr>
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
@@ -507,7 +510,8 @@
 	  at lower elevations, which degrades the sensitivity. In the
 	  mm bands, it is often better to limit your observations
 	  to elevations above 30 degrees. You can also limit your
-	  observations to a small hour-angle range, if you are
+	  observations to a specific hour-angle range, if you are
+	  observing for different times around transit, or are
 	  concerned about shadowing in the array you choose
 	  (shadowing diagrams can be found
 	  <a href="http://www.narrabri.atnf.csiro.au/observing/users_guide/html/new_atug_58.html#Shadowing-Diagrams">
@@ -519,10 +523,13 @@
 	    <td><input type="text" class="topcoat-text-input" placeholder="elevation"
 		       value="12" name="interactive-elevation-limit" id="interactive-elevation-limit" size="10">
 	      <label for="interactive-elevation-limit"> degrees</label></td></tr>
-	  <tr><th>Hour-angle Limit:</th>
-	    <td><input type="text" class="topcoat-text-input" placeholder="hour-angle"
-		       value="6" name="interactive-hourangle-limit" id="interactive-hourangle-limit" size="10">
-	      <label for="interactive-hourangle-limit"> hours</label></td></tr>
+	  <tr><th>Hour-angle Limits:</th>
+	    <td><input type="text" class="topcoat-text-input" placeholder="min"
+		       value="-6" name="interactive-hourangle-limit-min" id="interactive-hourangle-limit-min" size="3">
+	      <label for="interactive-hourangle-limit-min">(min) to (max)</label>
+	      <input type="text" class="topcoat-text-input" placeholder="max"
+		     value="6" name="interactive-hourangle-limit-max" id="interactive-hourangle-limit-max" size="3">
+	      <label for="interactive-hourangle-limit-max"> hours</label></td></tr>
 	</table>
       </div> <!-- #panel-observation-properties -->
       <div class="interview-panel" id="panel-calculation-mode">

@@ -13,7 +13,8 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'data-cabb-zoomfreq', 'interactive-cabb-spectralfreq' ],
 		 [ 'data-declination', 'interactive-declination' ],
 		 [ 'data-elevation-limit', 'interactive-elevation-limit' ],
-		 [ 'data-hourangle-limit', 'interactive-hourangle-limit' ],
+		 [ 'data-hourangle-limit-min', 'interactive-hourangle-limit-min' ],
+		 [ 'data-hourangle-limit-max', 'interactive-hourangle-limit-max' ],
 		 [ 'data-nzooms', 'interactive-nzooms' ],
 		 [ 'data-smoothing', 'interactive-smoothing' ],
 		 [ 'data-remove-edge', 'interactive-remove-edge' ],
@@ -953,12 +954,14 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 }
 		 if (!errorChecks('data-declination') ||
 		     !errorChecks('data-elevation-limit') ||
-		     !errorChecks('data-hourangle-limit')) {
+		     !errorChecks('data-hourangle-limit-min') ||
+		     !errorChecks('data-hourangle-limit-max')) {
 		     return;
 		 }
 		 pack['dec'] = domAttr.get('data-declination', 'value');
 		 pack['ellimit'] = domAttr.get('data-elevation-limit', 'value');
-		 pack['halimit'] = domAttr.get('data-hourangle-limit', 'value');
+		 pack['ha_min'] = domAttr.get('data-hourangle-limit-min', 'value');
+		 pack['ha_max'] = domAttr.get('data-hourangle-limit-max', 'value');
 		 pack['corrconfig'] = query('[name="data-cabb-mode"]:checked').val();
 		 pack['weighting'] = query('[name="data-image-weight"]:checked').val();
 		 var tmpVal = domAttr.get('data-cabb-zoomfreq', 'value');
