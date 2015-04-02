@@ -1,11 +1,12 @@
 require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Memory',
 	   'dijit/form/ComboBox', 'dojo/dom-class', 'dojo/_base/fx', 'dojo/dom-style',
 	   'dojo/fx', 'dojo/dom-construct', 'dojo/request/xhr', 'atnf/base',
-	   'dojo/dom-geometry', "dojo/_base/lang",
+	   'dojo/dom-geometry', "dojo/_base/lang", "dojox/timing",
 	   'dojo/NodeList-manipulate', 'dojo/NodeList-dom', 'dojo/domReady!' ],
 	 function(dom, domAttr, on, query, Memory, ComboBox, domClass, fx, domStyle, 
-		  coreFx, domConstruct, xhr, atnf, domGeom, lang) {
+		  coreFx, domConstruct, xhr, atnf, domGeom, lang, timing) {
 
+	     
 	     var linkedElements = [
 		 // Text input elements.
 		 [ 'data-cabb-centralfreq', 'interactive-continuum-cabb-centralfreq' ],
@@ -108,6 +109,11 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 
 	     query('.md-close').on('click', function(e) {
 		 query('.md-modal').removeClass('md-show');
+		 // Check for some particular cases.
+		 if (e.target.id === 'loading-too-long-close') {
+		     query('#loading-too-long-close').addClass('md-hidden-message');
+		     query('#loading-too-long').addClass('md-hidden-message');
+		 }
 	     });
 
 	     var errorChecks = function(cId) {
@@ -773,6 +779,9 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 
 	     };
 	     var gotResults = function(data) {
+		 // Close the loading dialog.
+		 query('#modal-loading').removeClass('md-show');
+		 
 		 //console.log(data);
 		 // Check for an error coming from the calculator.
 		 if ("error" in data) {
@@ -896,8 +905,44 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 });
 	     };
 
+
+	     // Make a couple of timing elements that will tick when the loading process
+	     // takes too long.
+	     var loadTimer1 = new timing.Timer();
+	     // The "taking a while" tick is after 10 seconds.
+	     loadTimer1.setInterval(10000); 
+	     loadTimer1.onTick = function() {
+		 // Stop the timer.
+		 loadTimer1.stop();
+		 // We show the second message in the loading dialog.
+		 query('#loading-long').removeClass('md-hidden-message');
+	     };
+
+	     var loadTimer2 = new timing.Timer();
+	     // The "probably failed" tick is after 40 seconds.
+	     loadTimer2.setInterval(40000);
+	     loadTimer2.onTick = function() {
+		 // Stop the timer.
+		 loadTimer2.stop();
+		 // We hide the second message in the loading dialog, and then
+		 // show the third message and the close button.
+		 query('#loading-long').addClass('md-hidden-message');
+		 query('#fountainG').addClass('md-hidden-message');
+		 query('#loading-too-long').removeClass('md-hidden-message');
+		 query('#loading-too-long-close').removeClass('md-hidden-message');
+	     };
+
 	     // Do some checks and then do the calculation.
 	     var beginCalculation = function() {
+		 // Begin by showing the loading dialog.
+		 showAlert('modal-loading');
+		 // And show the loading bubbles as well.
+		 query('#fountainG').removeClass('md-hidden-message');
+
+		 // Start the timers for load conditions.
+		 loadTimer1.start();
+		 loadTimer2.start();
+
 		 var pack = {};
 		 pack['configuration'] = query('[name="data-array"]:checked').val();
 		 pack['frequency'] = domAttr.get('data-cabb-centralfreq', 'value');
