@@ -851,7 +851,11 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			 if (t instanceof Array) {
 			     t = t.join(' x ');
 			 }
-			 domAttr.set(rId, 'innerHTML', t + ' ' + tu);
+			 if (domClass.contains(rId, "nounits")) {
+			     domAttr.set(rId, 'innerHTML', t);
+			 } else {
+			     domAttr.set(rId, 'innerHTML', t + ' ' + tu);
+			 }
 			 domClass.add(rId, 'filled-result');
 		     }
 		 }
