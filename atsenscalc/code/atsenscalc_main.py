@@ -76,7 +76,7 @@ def checkArguments(args):
 
     # Check for a specified rest frequency.
     if ('restfreq' in cargs and args.restfreq is not None):
-        restfreq = args.restfreq
+        restfreq = args.restfreq * 1000.0 # Conversion from GHz to MHz.
     elif ('zoomfreq' in cargs and args.zoomfreq is not None):
         # Use the centre frequency of the specified zoom band.
         restfreq = args.zoomfreq
@@ -261,7 +261,8 @@ def main(args):
     if (args.configuration in [ 'h214', 'H214', 'h168', 'H168', 'h75', 'H75' ]):
         output['parameters']['hybrid'] = True
     # The rest frequency of the spectral line of interest.
-    sens.addToOutput(output, 'parameters', 'reference_rest_frequency', argsInterpreted['restfreq'],
+    orf = "%.3f" % argsInterpreted['restfreq']
+    sens.addToOutput(output, 'parameters', 'reference_rest_frequency', orf,
                 "Reference Rest Frequency", "MHz")
 
     # Source imaging parameters.
@@ -347,7 +348,7 @@ def main(args):
             if (offs < closestCentreOffs):
                 closestCentreFreq = workArea['alternate']['centreFrequency'][i]
                 closestCentreOffs = offs
-        # Compute how the bandwidth is distributed around the cente frequency.
+        # Compute how the bandwidth is distributed around the centre frequency.
         bandwidthAbove = (0.125 * (2.0 * float(args.zoom_width) + (-1.0) ** float(args.zoom_width) + 3.0) *
                           workArea['resolutions']['continuum'])
         bandwidthBelow = (0.125 * (2.0 * float(args.zoom_width) - (-1.0) ** float(args.zoom_width) + 1.0) *
@@ -370,17 +371,17 @@ def main(args):
                      "Number of concatenated zoom channels", "channels")
     sens.addToOutput(output, 'parameters', 'zoom_frequency', args.frequency, "Zoom Frequency", "MHz")
     if (specificZoomCalc):
+        sens.addToOutput(output, 'parameters', 'zoom_frequency', closestCentreFreq, "Specific Zoom Frequency", "MHz")
         # Get the lowest and highest frequencies.
         szoomLowestFreq = (workArea['specificZoom']['centreFrequency'][args.zoom_edge] -
                            (workArea['resolutions']['zoom'] / 2))
         szoomHighestFreq = (workArea['specificZoom']['centreFrequency'][-(args.zoom_edge + 1)] +
                             (workArea['resolutions']['zoom'] / 2))
-        sens.addToOutput(output, 'parameters', 'zoom_frequency', args.zoomfreq, "Specific Zoom Frequency", "MHz")
         sens.addToOutput(output, 'specific_zoom', 'frequency_range', [ szoomLowestFreq, szoomHighestFreq ],
-                    "Specific Zoom Frequency Range", "MHz")
+                         "Specific Zoom Frequency Range", "MHz")
         # The number of zooms used.
         sens.addToOutput(output, 'specific_zoom', 'n_zooms', args.zoom_width,
-                    "Number of concatenated zoom channels", "channels")
+                         "Number of concatenated zoom channels", "channels")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -415,7 +416,7 @@ def main(args):
         print "MESSAGE: Flagging..."
     sens.flagTemplate(workArea['continuum'], 'continuum', args.corrconfig, 0)
     sens.flagTemplate(workArea['continuum'], 'edge', args.corrconfig, args.edge)
-    if (specificZoomCalc == True):
+    if (specificZoomCalc):
         sens.flagTemplate(workArea['specificZoom'], 'edge', args.corrconfig, args.zoom_edge)
     if (args.birdies):
         sens.flagTemplate(workArea['continuum'], 'birdies', args.corrconfig, 0)
@@ -542,73 +543,74 @@ def main(args):
     # We calculate the velocity span corresponding to that amount of bandwidth with the
     # actual lower frequency.
     sens.addToOutput(output, 'continuum', 'spectral_bandwidth',
-                sens.bandwidthToVelocity(workArea['continuum']['centreFrequency'][args.edge],
-                                    contVelBandwidth, argsInterpreted['restfreq']),
-                "Spectral Bandwidth", "km/s")
+                     sens.bandwidthToVelocity(workArea['continuum']['centreFrequency'][args.edge],
+                                              contVelBandwidth, argsInterpreted['restfreq']),
+                     "Spectral Bandwidth", "km/s")
     # The velocity width of a channel is dependant on its frequency, so we can't give
     # an exact figure for every channel here; we just divide the continuum range by the
     # number of channels here, excluding the edge channels.
     contRes = (output['continuum']['spectral_bandwidth'] / 
                float(len(workArea['continuum']['centreFrequency']) - 2 * args.edge))
     # We now compensate for continuum band smoothing.
-    chanRes = float("%.3f" % (contRes / float(args.smoothing)))
+    chanRes = float("%.3f" % (contRes * float(args.smoothing)))
     sens.addToOutput(output, 'continuum', 'spectral_channel_resolution', chanRes,
-                "Spectral Channel Resolution", "km/s")
+                     "Spectral Channel Resolution", "km/s")
 
     # The velocity width of a "general" zoom band needs to be calculated in the same way
     # since the user may not want the edge channels there.
     # The usable frequency bandwidth over a "general" zoom band.
-    zoomVelBandwidth = (workArea['resolutions']['continuum'] - 
+    nZoomFactor = (float(args.zoom_width) + 1.0) / 2.0
+    zoomVelBandwidth = (nZoomFactor * workArea['resolutions']['continuum'] - 
                         (2.0 * float(args.zoom_edge) * workArea['resolutions']['zoom']))
     sens.addToOutput(output, 'zoom', 'effective_bandwidth', zoomVelBandwidth, 
-                "Effective Bandwidth", "MHz")
+                     "Effective Bandwidth", "MHz")
     # But we can't actually calculate a "general" velocity width that way since it is again
     # frequency dependant. So we just divide up the continuum velocity resolution.
     zoomRes = contRes / float(sens.nZoomChannels)
     # And compensate for zoom band smoothing.
-    zoomChanRes = float("%.3f" % (zoomRes / float(args.zoom_smoothing)))
+    zoomChanRes = float("%.3f" % (zoomRes * float(args.zoom_smoothing)))
     sens.addToOutput(output, 'zoom', 'spectral_channel_resolution', zoomChanRes, "Spectral Channel Resolution",
-                "km/s")
+                     "km/s")
     # The number of channels in the zoom, excluding the edge flagged channels.
-    nZoomVelChans = sens.nZoomChannels - 2 * args.zoom_edge
+    nZoomVelChans = int(zoomVelBandwidth / workArea['resolutions']['zoom'])
     # But we output only the number of smoothed channels.
     sens.addToOutput(output, 'zoom', 'n_channels', (nZoomVelChans / args.zoom_smoothing),
-                "# Channels", None)
+                     "# Channels", None)
     # The zoom velocity width is then just the velocity resolution of each channel multiplied
     # by the number of non-edge channels.
     zoomSpecBandwidth = zoomRes * float(nZoomVelChans)
     zsb = "%.3f" % zoomSpecBandwidth
     sens.addToOutput(output, 'zoom', 'spectral_bandwidth', zsb, "Spectral Bandwidth", "km/s")
 
-    if (specificZoomCalc == True):
+    if (specificZoomCalc):
         # We can actually calculate real velocity values for the specific zoom band, so we
         # do it basically the same as for the continuum band.
         # The frequency bandwidth of the specific zoom takes into account how many zoom
         # channels that the user will consolidate, and the number of channels flagged at the
         # edge.
-        szoomVelBandwidth = (workArea['resolutions']['continuum'] * sum(szBandwidths) - 
-                             (2.0 * float(args.zoom_edge) * workArea['resolutions']['zoom']))
+        szoomVelBandwidth = szoomHighestFreq - szoomLowestFreq
+        szvb = ".3f" % szoomVelBandwidth
         sens.addToOutput(output, 'specific_zoom', 'effective_bandwidth', szoomVelBandwidth, 
-                    "Effective Bandwidth", "MHz")
+                         "Effective Bandwidth", "MHz")
         # The velocity span corresponding to that amount of bandwidth is calculated with
         # respect to the lower frequency of the zoom.
         sens.addToOutput(output, 'specific_zoom', 'spectral_bandwidth',
-                    sens.bandwidthToVelocity(workArea['specificZoom']['centreFrequency'][args.zoom_edge],
-                                        szoomVelBandwidth, argsInterpreted['restfreq']),
-                    "Spectral Bandwidth", "km/s")
+                         sens.bandwidthToVelocity(szoomLowestFreq, szoomVelBandwidth,
+                                                  argsInterpreted['restfreq']),
+                         "Spectral Bandwidth", "km/s")
         # We calculate the number of channels across the consolidated zoom.
-        nszoomChans = int(sum(szBandwidths) * float(sens.nZoomChannels) - float(2 * args.zoom_edge))
+        nszoomChans = int(szoomVelBandwidth / workArea['resolutions']['zoom'])
         # But we output only the number of smoothed channels.
         sens.addToOutput(output, 'specific_zoom', 'n_channels', (nszoomChans / args.zoom_smoothing),
-                    "# Channels", None)
+                         "# Channels", None)
 
         # The velocity resolution is just the velocity span divided by the number of channels,
         # excluding those flagged at the edge.
         szoomRes = (output['specific_zoom']['spectral_bandwidth'] / float(nszoomChans))
         # We compensate for zoom smoothing.
-        szoomChanRes = float("%.3f" % (szoomRes / float(args.zoom_smoothing)))
+        szoomChanRes = float("%.3f" % (szoomRes * float(args.zoom_smoothing)))
         sens.addToOutput(output, 'specific_zoom', 'spectral_channel_resolution', szoomChanRes,
-                    "Spectral Channel Resolution", "km/s")
+                         "Spectral Channel Resolution", "km/s")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
