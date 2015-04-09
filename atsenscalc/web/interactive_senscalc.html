@@ -188,7 +188,7 @@
 	  <td>
 	    <input type="radio" id="data-image-weight-R2" name="data-image-weight"
 		   value="R2" checked>
-	    <label for="data-image-weight-N">Natural</label>
+	    <label for="data-image-weight-R2">Natural</label>
 	    <input type="radio" id="data-image-weight-R1" name="data-image-weight"
 		   value="R1">
 	    <label for="data-image-weight-R1">Robust=1</label>
@@ -202,7 +202,76 @@
 		   value="R-2">
 	    <label for="data-image-weight-R-2">Uniform</label>
 	</td></tr>
-	<tr><th>
+        <tr><th>
+	    <div class="input-data-table-help">
+	      <p class="triangle-obtuse">
+		The weather conditions used to calculate the sensitivities are
+		selected by using the season in which the observations will be
+		made.
+	      </p>
+	      Season:
+	    </div>
+	  </th>
+	  <td>
+	    <input type="radio" id="data-season-annual" name="data-season"
+		   value="ANNUAL" checked>
+	    <label for="data-season-annual">Annual</label>
+	    <input type="radio" id="data-season-aprs" name="data-season"
+		   value="APRS">
+	    <label for="data-season-aprs">APRS</label>
+	    <input type="radio" id="data-season-octs" name="data-season"
+		   value="OCTS">
+	    <label for="data-season-octs">OCTS</label>
+	    <input type="radio" id="data-season-summer" name="data-season"
+		   value="SUMMER">
+	    <label for="data-season-summer">Summer</label>
+	    <input type="radio" id="data-season-autumn" name="data-season"
+		   value="AUTUMN">
+	    <label for="data-season-autumn">Autumn</label>
+	    <input type="radio" id="data-season-winter" name="data-season"
+		   value="WINTER">
+	    <label for="data-season-winter">Winter</label>
+	    <input type="radio" id="data-season-spring" name="data-season"
+		   value="SPRING">
+	    <label for="data-season-spring">Spring</label>
+	    <input type="radio" id="data-season-jan" name="data-season"
+		   value="JAN">
+	    <label for="data-season-jan">Jan</label>
+	    <input type="radio" id="data-season-feb" name="data-season"
+		   value="FEB">
+	    <label for="data-season-feb">Feb</label>
+	    <input type="radio" id="data-season-mar" name="data-season"
+		   value="MAR">
+	    <label for="data-season-mar">Mar</label>
+	    <input type="radio" id="data-season-apr" name="data-season"
+		   value="APR">
+	    <label for="data-season-apr">Apr</label>
+	    <input type="radio" id="data-season-may" name="data-season"
+		   value="MAY">
+	    <label for="data-season-may">May</label>
+	    <input type="radio" id="data-season-jun" name="data-season"
+		   value="JUN">
+	    <label for="data-season-jun">Jun</label>
+	    <input type="radio" id="data-season-jul" name="data-season"
+		   value="JUL">
+	    <label for="data-season-jul">Jul</label>
+	    <input type="radio" id="data-season-aug" name="data-season"
+		   value="AUG">
+	    <label for="data-season-aug">Aug</label>
+	    <input type="radio" id="data-season-sep" name="data-season"
+		   value="SEP">
+	    <label for="data-season-sep">Sep</label>
+	    <input type="radio" id="data-season-oct" name="data-season"
+		   value="OCT">
+	    <label for="data-season-oct">Oct</label>
+	    <input type="radio" id="data-season-nov" name="data-season"
+		   value="NOV">
+	    <label for="data-season-nov">Nov</label>
+	    <input type="radio" id="data-season-dec" name="data-season"
+		   value="DEC">
+	    <label for="data-season-dec">Dec</label>
+	</td></tr>
+        <tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
 		The number of frequency channels to average together, using
@@ -817,34 +886,123 @@
 	<table class="interactive-table">
 	  <tr><th>Weighting scheme:</th>
 	    <td>
-	      <div class="topcoat-tab-bar">
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R2" checked>
-		  <button class="topcoat-tab-bar__button">Natural</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R1">
-		  <button class="topcoat-tab-bar__button">Robust=1</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R0">
-		  <button class="topcoat-tab-bar__button">Robust=0</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R-1">
-		  <button class="topcoat-tab-bar__button">Robust=-1</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R-2">
-		  <button class="topcoat-tab-bar__button">Uniform</button>
-		</label>
-	  </div></td></tr>
+	      <input type="radio" id="interactive-cube-weight-R2" name="interactive-cube-weight"
+		     value="R2" checked>
+	      <label for="interactive-cube-weight-R2">Natural</label>
+	      <input type="radio" id="interactive-cube-weight-R1" name="interactive-cube-weight"
+		     value="R1">
+	      <label for="interactive-cube-weight-R1">Robust=1</label>
+	      <input type="radio" id="interactive-cube-weight-R0" name="interactive-cube-weight"
+		     value="R0">
+	      <label for="interactive-cube-weight-R0">Robust=0</label>
+	      <input type="radio" id="interactive-cube-weight-R-1" name="interactive-cube-weight"
+		     value="R-1">
+	      <label for="interactive-cube-weight-R-1">Robust=-1</label>
+	      <input type="radio" id="interactive-cube-weight-R-2" name="interactive-cube-weight"
+		     value="R-2">
+	      <label for="interactive-cube-weight-R-2">Uniform</label>
+	  </td></tr>
 	  <tr><th>Smoothing:</th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
 		     value="1" name="interactive-smoothing" id="interactive-smoothing" size="10">
 	    <label for="interactive-smoothing"> channels</label></td></tr>
 	</table>
       </div> <!-- #panel-spectral-imaging -->
+
+      <div class="interview-panel" id="panel-season">
+	<h2>When will you observe?</h2>
+	<div class="option-help">
+	  The sensitivity calculator determines the best, typical and worst weather
+	  conditions based on the time of year you will observe. You should select
+	  the season below that your observations will be made in. The actual weather
+	  conditions that the calculator uses will displayed alongside the results.
+	  <br /><br />
+	  The choices are:
+	  <br /><br />
+	  <ul>
+	    <li><strong>Annual</strong>: choose this if you don't know when your observations
+	      may be scheduled, or you would like to know the absolute best and worst conditions
+	      that are seen at the ATCA.</li>
+	    <li><strong>APRS</strong>: choose this if you are proposing to observe in the
+	      April 1 - September 30 semester.</li>
+	    <li><strong>OCTS</strong>: choose this if you are proposing to observe in the
+	      October 1 - March 31 semester.</li>
+	    <li><strong>Summer</strong>: weather conditions present between December 1 and
+	      February 28.</li>
+	    <li><strong>Autumn</strong>: weather conditions present between March 1 and
+	      May 31.</li>
+	    <li><strong>Winter</strong>: weather conditions present between June 1 and
+	      August 31.</li>
+	    <li><strong>Spring</strong>: weather conditions present between September 1 and
+	      November 30.</li>
+	    <li><strong>Jan/Feb/Mar/Apr/May/Jun/Jul/Aug/Sep/Oct/Nov/Dec</strong>: weather
+	      conditions present in each particular month.</li>
+	  </ul><br />
+	</div>
+	<table class="interactive-table">
+          <tr><th>Season:</th>
+	    <td>
+	    <input type="radio" id="interactive-season-annual" name="interactive-season"
+		   value="ANNUAL" checked>
+	    <label for="interactive-season-annual">Annual</label>
+	    <input type="radio" id="interactive-season-aprs" name="interactive-season"
+		   value="APRS">
+	    <label for="interactive-season-aprs">APRS</label>
+	    <input type="radio" id="interactive-season-octs" name="interactive-season"
+		   value="OCTS">
+	    <label for="interactive-season-octs">OCTS</label>
+	    <input type="radio" id="interactive-season-summer" name="interactive-season"
+		   value="SUMMER">
+	    <label for="interactive-season-summer">Summer</label>
+	    <input type="radio" id="interactive-season-autumn" name="interactive-season"
+		   value="AUTUMN">
+	    <label for="interactive-season-autumn">Autumn</label>
+	    <input type="radio" id="interactive-season-winter" name="interactive-season"
+		   value="WINTER">
+	    <label for="interactive-season-winter">Winter</label>
+	    <input type="radio" id="interactive-season-spring" name="interactive-season"
+		   value="SPRING">
+	    <label for="interactive-season-spring">Spring</label>
+	    <input type="radio" id="interactive-season-jan" name="interactive-season"
+		   value="JAN">
+	    <label for="interactive-season-jan">Jan</label>
+	    <input type="radio" id="interactive-season-feb" name="interactive-season"
+		   value="FEB">
+	    <label for="interactive-season-feb">Feb</label>
+	    <input type="radio" id="interactive-season-mar" name="interactive-season"
+		   value="MAR">
+	    <label for="interactive-season-mar">Mar</label>
+	    <input type="radio" id="interactive-season-apr" name="interactive-season"
+		   value="APR">
+	    <label for="interactive-season-apr">Apr</label>
+	    <input type="radio" id="interactive-season-may" name="interactive-season"
+		   value="MAY">
+	    <label for="interactive-season-may">May</label>
+	    <input type="radio" id="interactive-season-jun" name="interactive-season"
+		   value="JUN">
+	    <label for="interactive-season-jun">Jun</label>
+	    <input type="radio" id="interactive-season-jul" name="interactive-season"
+		   value="JUL">
+	    <label for="interactive-season-jul">Jul</label>
+	    <input type="radio" id="interactive-season-aug" name="interactive-season"
+		   value="AUG">
+	    <label for="interactive-season-aug">Aug</label>
+	    <input type="radio" id="interactive-season-sep" name="interactive-season"
+		   value="SEP">
+	    <label for="interactive-season-sep">Sep</label>
+	    <input type="radio" id="interactive-season-oct" name="interactive-season"
+		   value="OCT">
+	    <label for="interactive-season-oct">Oct</label>
+	    <input type="radio" id="interactive-season-nov" name="interactive-season"
+		   value="NOV">
+	    <label for="interactive-season-nov">Nov</label>
+	    <input type="radio" id="interactive-season-dec" name="interactive-season"
+		   value="DEC">
+	    <label for="interactive-season-dec">Dec</label>
+	  </td></tr>
+	</table>
+      </div> <!-- #panel-season -->
+
       <div class="interview-panel" id="panel-calculate-button">
 	<h2>Ready to calculate!</h2>
 	<div class="option-help">

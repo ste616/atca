@@ -29,6 +29,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'data-sensitivity-mode', 'interactive-sensitivity-mode' ],
 		 [ 'data-sensitivity-weather', 'interactive-sensitivity-weather' ],
 		 [ 'data-cabb-mode', 'interactive-cabb-mode' ],
+		 [ 'data-season', 'interactive-season' ],
 		 // Checkboxes.
 		 [ 'data-include-ca06', 'interactive-include-ca06' ],
 		 [ 'data-remove-birdies', 'interactive-remove-birdies' ],
@@ -38,7 +39,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 // Text input elements.
 		 '', '', '-30', '12', '6', '1', '1', '0', '720', '1',
 		 // Radio buttons.
-		 '6km', 'N', 'Integration', 'mJy/beam', 'continuum', 'best', 'CFB1M',
+		 '6km', 'N', 'Integration', 'mJy/beam', 'continuum', 'best', 'CFB1M', 'ANNUAL',
 		 // Checkboxes.
 		 true, true, true
 	     ];
@@ -201,11 +202,11 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     var myVal = query('[name="' + myName +'"]:checked').val();
 		     if (myVal === 'Integration') {
 			 panelOrder['panel-calculation-mode']['next'] =
-			     panelOrder['panel-calculate-button']['previous'] =
+			     panelOrder['panel-season']['previous'] =
 			     'panel-integration-time';
 		     } else if (myVal === 'Sensitivity') {
 			 panelOrder['panel-calculation-mode']['next'] =
-			     panelOrder['panel-calculate-button']['previous'] =
+			     panelOrder['panel-season']['previous'] =
 			     'panel-sensitivity-required';
 		     }
 		 }
@@ -409,13 +410,16 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     'next': 'panel-integration-time', 
 		     'previous': 'panel-flagging'
 		 }, 'panel-integration-time': {
-		     'next': 'panel-calculate-button', 
+		     'next': 'panel-season', 
 		     'previous': 'panel-calculation-mode'
 		 }, 'panel-sensitivity-required': {
-		     'next': 'panel-calculate-button', 
+		     'next': 'panel-season', 
 		     'previous': 'panel-calculation-mode'
+		 }, 'panel-season': {
+		     'next': 'panel-calculate-button',
+		     'previous': 'panel-integration-time'
 		 }, 'panel-calculate-button': {
-		     'next': '', 'previous': 'panel-integration-time'
+		     'next': '', 'previous': 'panel-season'
 		 }
 	     };
 
@@ -1081,7 +1085,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			 pack['target_continuum'] = true;
 		     }
 		     
-		     targetWeather = query('[name="data-sensitivity-weather"]:checked').val();
+		     var targetWeather = query('[name="data-sensitivity-weather"]:checked').val();
 		     pack['target_' + targetWeather] = true
 
 		     tmpVal = query('[name="data-sensitivity-units"]:checked').val();
@@ -1114,6 +1118,8 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 if (tmpVal > 0) {
 		     pack['edge'] = tmpVal;
 		 }
+		 var targetSeason = query('[name="data-season"]:checked').val();
+		 pack['season'] = targetSeason;
 		 serverComms(pack).then(gotResults);
 	     };
 	     on(dom.byId('data-calculate'), 'click', beginCalculation);
