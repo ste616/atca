@@ -668,6 +668,26 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'sensitivities', 'array_sensitivity', 1 ],
 		 'results-array-arraysensitivity-worstweather':
 		 [ 'sensitivities', 'array_sensitivity', 2 ],
+		 'results-array-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-array-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-array-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-array-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-array-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-array-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-array-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-array-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-array-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-array-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ],
 
 		 // Continuum Information panel.
 		 'results-continuum-weighting':
@@ -697,6 +717,26 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-continuum-brightnesstemperature-worstweather':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
 		   'continuum', 2 ],
+		 'results-continuum-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-continuum-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-continuum-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-continuum-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-continuum-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-continuum-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-continuum-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-continuum-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-continuum-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-continuum-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ],
 
 		 // Spectral Information panel.
 		 'results-spectral-weighting':
@@ -734,6 +774,26 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-spectral-brightnesstemperature-worstweather':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
 		   'spectral', 2 ],
+		 'results-spectral-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-spectral-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-spectral-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-spectral-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-spectral-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-spectral-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-spectral-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-spectral-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-spectral-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-spectral-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ],
 
 		 // Zoom Information panel.
 		 'results-zoom-weighting':
@@ -776,8 +836,27 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		   [ 'specific_zoom', 'zoom' ], 1 ],
 		 'results-zoom-brightnesstemperature-worstweather':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   [ 'specific_zoom', 'zoom' ], 2 ]
-
+		   [ 'specific_zoom', 'zoom' ], 2 ],
+		 'results-zoom-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-zoom-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-zoom-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-zoom-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-zoom-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-zoom-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-zoom-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-zoom-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-zoom-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-zoom-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ]
 	     };
 	     var gotResults = function(data) {
 		 // Close the loading dialog.

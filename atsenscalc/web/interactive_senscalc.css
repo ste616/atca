@@ -161,6 +161,7 @@ div.choice-zoom { border: 4px solid #ffdab9; }
 .results-parameter-table tbody td { text-align: left; padding: 0.2em 0.6em; border: 1px dotted black; }
 .results-parameter-table thead th { background: Navy; font-weight: bold; color: white;
 				    text-align: center; padding: 0.2em; border: 1px dotted white; }
+.results-parameter-table thead td { text-align: center; padding: 0.2em; }
 
 .spectral-rms-small { width: 95%; margin: 1em auto; text-align: center; }
 .spectral-rms-small figcaption { font-weight: bold; width: 90%; text-align: left; 
