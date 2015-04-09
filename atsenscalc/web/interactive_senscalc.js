@@ -18,7 +18,8 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'data-nzooms', 'interactive-nzooms' ],
 		 [ 'data-smoothing-continuum', 'interactive-smoothing-continuum' ],
 		 [ 'data-smoothing-zoom', 'interactive-smoothing-zoom' ],
-		 [ 'data-remove-edge', 'interactive-remove-edge' ],
+		 [ 'data-remove-edge-continuum', 'interactive-remove-edge-continuum' ],
+		 [ 'data-remove-edge-zoom', 'interactive-remove-edge-zoom' ],
 		 [ 'data-integration', 'interactive-integration' ],
 		 [ 'data-sensitivity', 'interactive-sensitivity' ],
 		 // Radio buttons.
@@ -1116,9 +1117,13 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 if (dom.byId('data-remove-rfi').checked) {
 		     pack['rfi'] = true;
 		 }
-		 tmpVal = domAttr.get('data-remove-edge', 'value');
+		 tmpVal = domAttr.get('data-remove-edge-continuum', 'value');
 		 if (tmpVal > 0) {
 		     pack['edge'] = tmpVal;
+		 }
+		 tmpVal = domAttr.get('data-remove-edge-zoom', 'value');
+		 if (tmpVal > 0) {
+		     pack['zoom_edge'] = tmpVal;
 		 }
 		 var targetSeason = query('[name="data-season"]:checked').val();
 		 pack['season'] = targetSeason;

@@ -314,19 +314,26 @@
 	  <td><label class="topcoat-switch">
 	      <input type="checkbox" class="topcoat-switch__input" id="data-remove-rfi" checked>
 	      <div class="topcoat-switch__toggle"></div></label></td></tr>
-	<tr><th>
+	<tr><th rowspan="2">
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
-		Remove this many channels from each edge. The CABB bandpass
-		filters have a half-power width of approximately 32 MHz. Miriad's
-		atlod will by default remove about 100 MHz from each edge.
+		Remove this many channels from each edge of the continuum or
+		zoom bands (each separately specified). The CABB bandpass
+		filters have a half-power width of approximately 32 MHz in the
+		continuum band. Miriad's
+		atlod will by default remove about 100 MHz from each edge. For the
+		zooms, roughly 10 channels on each edge are not very useful.
 	      </p>
 	      Rem Edge:
 	    </div>
 	  </th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="0" name="data-remove-edge" id="data-remove-edge" size="10">
-	    <label for="data-remove-edge"> channels</label></td></tr>
+	 	     value="0" name="data-remove-edge-continuum" id="data-remove-edge-continuum" size="10">
+	    <label for="data-remove-edge-continuum"> continuum channels</label></td></tr>
+        <tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="width"
+	  	     value="0" name="data-remove-edge-zoom" id="data-remove-edge-zoom" size="10">
+	    <label for="data-remove-edge-zoom"> zoom channels</label></td></tr>
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
@@ -676,7 +683,7 @@
 		<label for="interactive-sensitivity-units-mjy">mJy/beam</label>
 		<input type="radio" id="interactive-sensitivity-units-k" name="interactive-sensitivity-units"
 		       value="K">
-		<label for="interactive-sensitivity-units-k">K</label>
+		<label for="interactive-sensitivity-units-k">mK</label>
 	      </label>
 	  </td></tr>
 	  <tr><th>Required Band:</th>
@@ -722,8 +729,9 @@
 	      occasionally present (eg. weather radar) will not be counted
 	      in this item.</li>
 	    <li><strong>Edge channels:</strong> the CABB bandpass filter
-	      degrades the sensitivity at the edges of the band; the sensitivity
-	      of the 32 MHz on each edge is most affected.</li>
+	      degrades the sensitivity at the edges of the continuum band; the sensitivity
+	      of the 32 MHz on each edge is most affected. For zooms, the 10 edge
+	      channels are usually not very useful.</li>
 	  </ul>
 	</div>
 	<table class="interactive-table">
@@ -735,9 +743,14 @@
 	    <td><label class="topcoat-switch">
 		<input type="checkbox" class="topcoat-switch__input" id="interactive-remove-rfi" checked>
 		<div class="topcoat-switch__toggle"></div></label></td></tr>
-	  <tr><th>Edge channels:</th>
+	  <tr><th rowspan="2">Edge channels:</th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="0" name="interactive-remove-edge" id="interactive-remove-edge" size="10"></td></tr>
+		     value="0" name="interactive-remove-edge-continuum" id="interactive-remove-edge-continuum" size="10">
+	    <label for="interactive-remove-edge-continuum"> continuum channels</label></td></tr>
+	  <tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="width"
+		     value="0" name="interactive-remove-edge-zoom" id="interactive-remove-edge-zoom" size="10">
+	    <label for="interactive-remove-edge-zoom"> zoom channels</label></td></tr>
 	</table>
       </div> <!-- #panel-flagging -->
       <div class="interview-panel" id="panel-spectral-frequency">
@@ -1163,7 +1176,7 @@
 	      <span id="results-summary-zoom-sensitivity-sensitivity"></span>,</li>
 	  </ul>
 	  <p>will require <span id="results-summary-zoom-sensitivity-time"></span>
-	    minutes of on-source integration time.</p>
+	    of on-source integration time.</p>
 	</div> <!-- #results-summary-zoom-sensitivity -->
 	<div class="navigation-permanent">
 	  <div class="navigation-previous">
