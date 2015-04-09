@@ -271,19 +271,24 @@
 		   value="DEC">
 	    <label for="data-season-dec">Dec</label>
 	</td></tr>
-        <tr><th>
+        <tr><th rowspan="2">
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
 		The number of frequency channels to average together, using
 		simple averaging. Hanning smoothing is not required for
-		CABB's polyphase filter bank.
+		CABB's polyphase filter bank. Smoothing can be changed for
+		both the continuum and zoom bands separately here.
 	      </p>
 	      Smoothing:
 	    </div>
 	  </th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="1" name="data-smoothing" id="data-smoothing" size="10">
-	    <label for="data-smoothing"> channels</label></td></tr>
+		     value="1" name="data-smoothing-continuum" id="data-smoothing-continuum" size="10">
+	    <label for="data-smoothing-continuum"> continuum channels</label></td></tr>
+	<tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="width"
+		     value="1" name="data-smoothing-zoom" id="data-smoothing-zoom" size="10">
+	    <label for="data-smoothing-zoom"> zoom channels</label></td></tr>
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
@@ -881,7 +886,9 @@
 	  If you require a lower noise level in each output plane, and you don't
 	  require the resolution provided by the CABB channelisation, then you
 	  may want to choose to smooth your data in the imaging process. With CABB's
-	  polyphase filterbank design, Hanning smoothing is not required.
+	  polyphase filterbank design, Hanning smoothing is not required. You can smooth
+	  in either the continuum band or the zoom band, or both, with different levels
+	  of smoothing in each.
 	</div>
 	<table class="interactive-table">
 	  <tr><th>Weighting scheme:</th>
@@ -902,10 +909,14 @@
 		     value="R-2">
 	      <label for="interactive-cube-weight-R-2">Uniform</label>
 	  </td></tr>
-	  <tr><th>Smoothing:</th>
-	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="1" name="interactive-smoothing" id="interactive-smoothing" size="10">
-	    <label for="interactive-smoothing"> channels</label></td></tr>
+	  <tr><th rowspan="2">Smoothing:</th>
+	    <td><input type="text" class="topcoat-text-input" placeholder="width"
+		       value="1" name="interactive-smoothing-continuum" id="interactive-smoothing-continuum" size="10">
+	      <label for="interactive-smoothing-continuum"> continuum channels</label></td></tr>
+	  <tr>
+	    <td><input type="text" class="topcoat-text-input" placeholder="width"
+		       value="1" name="interactive-smoothing-zoom" id="interactive-smoothing-zoom" size="10">
+	      <label for="interactive-smoothing-zoom"> zoom channels</label></td></tr>
 	</table>
       </div> <!-- #panel-spectral-imaging -->
 

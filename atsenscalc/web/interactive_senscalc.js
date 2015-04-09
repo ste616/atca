@@ -16,7 +16,8 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'data-hourangle-limit-min', 'interactive-hourangle-limit-min' ],
 		 [ 'data-hourangle-limit-max', 'interactive-hourangle-limit-max' ],
 		 [ 'data-nzooms', 'interactive-nzooms' ],
-		 [ 'data-smoothing', 'interactive-smoothing' ],
+		 [ 'data-smoothing-continuum', 'interactive-smoothing-continuum' ],
+		 [ 'data-smoothing-zoom', 'interactive-smoothing-zoom' ],
 		 [ 'data-remove-edge', 'interactive-remove-edge' ],
 		 [ 'data-integration', 'interactive-integration' ],
 		 [ 'data-sensitivity', 'interactive-sensitivity' ],
@@ -1098,7 +1099,8 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 if (dom.byId('data-include-ca06').checked) {
 		     pack['ca06'] = true;
 		 }
-		 pack['smoothing'] = domAttr.get('data-smoothing', 'value');
+		 pack['smoothing'] = domAttr.get('data-smoothing-continuum', 'value');
+		 pack['zoom_smoothing'] = domAttr.get('data-smoothing-zoom', 'value');
 		 pack['zoom_width'] = domAttr.get('data-nzooms', 'value');
 		 tmpVal = domAttr.get('data-rest-frequency', 'value');
 		 if (tmpVal !== '') {
