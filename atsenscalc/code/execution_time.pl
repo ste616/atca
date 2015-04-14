@@ -6,8 +6,9 @@
 
 use strict;
 
-my $cmd = "python ./atsenscal_commandline.py";
+my $cmd = "python ./atsenscalc_commandline.py";
 my $niters = 5; # Run the command this many times for each combo.
+my @iterfreqs = ( 2100, 5500, 19000, 36000, 94000 );
 
 # Begin looping.
 my @args;
@@ -39,6 +40,9 @@ for (my $corr_i = 0; $corr_i <= 1; $corr_i++) {
 
 		for (my $iter = 1; $iter <= $niters; $iter++) {
 		    # The repeat loop.
+		    my $scmd = "time ".$cmd." ".join(" ", @args)." -f ".
+			$iterfreqs[$iter - 1]." -z ".($iterfreqs[$iter - 1] - 100);
+		    print $scmd."\n";
 		    
 		}
 

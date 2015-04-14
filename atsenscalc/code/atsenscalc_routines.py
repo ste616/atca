@@ -427,7 +427,7 @@ def templateFill(srcTemplate, destTemplate):
             sfs = lowHigh(srcTemplate['centreFrequency'][j], srcTemplate['channelWidth'])
         j -= 1 # Because the breaking point is when the frequency goes too high.
         i = 1
-        while (destTemplate['count'][i] == 0):
+        while (i < (len(destTemplate['count']) - 1) and destTemplate['count'][i] == 0):
             i += 1
         destTemplate['value'][0] = linearInterpolate({ 'value': srcTemplate['value'][j],
                                                        'frequency': srcTemplate['centreFrequency'][j] },
