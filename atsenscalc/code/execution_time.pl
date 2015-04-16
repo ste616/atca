@@ -24,12 +24,12 @@ for (my $corr_i = 0; $corr_i <= 1; $corr_i++) {
 	$outargs[0] = "CFB64M";
     }
 
-    for (my $smooth_i = 1; $smooth_i <= 16; $smooth_i *= 2) {
+    for (my $smooth_i = 1; $smooth_i <= 1; $smooth_i *= 2) {
 	# The continuum smoothing loop.
 	$args[1] = "-s ".$smooth_i;
 	$outargs[1] = "continuum smoothing ".$smooth_i;
 
-	for (my $zoomsmooth_i = 1; $zoomsmooth_i <= 16; $zoomsmooth_i *= 2) {
+	for (my $zoomsmooth_i = 1; $zoomsmooth_i <= 1; $zoomsmooth_i *= 2) {
 	    # The zoom smoothing loop.
 	    $args[2] = "-y ".$zoomsmooth_i;
 	    $outargs[2] = "zoom smoothing ".$zoomsmooth_i;
