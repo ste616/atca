@@ -656,7 +656,7 @@ def calculateRms(tsys, efficiency, opacity, temperature, minHa, maxHa, perHa, nA
 
             # Get the average excess temperature now.
             exTemp = [ row[i] for row in Texcess ]
-            excessTemp = math.fsum(exTemp) / float(len(exTemp))
+            excessTemp = np.sum(exTemp) / float(len(exTemp))
 
             Tmeas = tsys['value'][i] + excessTemp
             TmeasEff = Tmeas / efficiency['value'][i]
