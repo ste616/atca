@@ -364,22 +364,17 @@ def linearInterpolate(p1, p2, pi):
 
 def templateInterpolate(t):
     # Interpolate values for channels with no counts.
-    lg = 0
-    for i in xrange(0, len(t['centreFrequency'])):
-        if (t['count'][i] > 0):
-            # The last good channel.
-            lg = i
-        else:
-            # Find the next good channel.
-            for j in xrange(i + 1, len(t['centreFrequency'])):
-                if (t['count'][j] > 0):
-                    hg = j
-                    break
-            t['value'][i] = linearInterpolate({ 'frequency': t['centreFrequency'][lg],
-                                                'value': t['value'][lg] },
-                                              { 'frequency': t['centreFrequency'][hg],
-                                                'value': t['value'][hg] },
-                                              { 'frequency': t['centreFrequency'][i] })
+    # Get the array for where counts is 0 and not.
+    zeroes = np.where(t['count'] == 0)
+    good = np.where(t['count'] > 0)
+    # Get the arrays without zero counts.
+    cf = t['centreFrequency'][good]
+    vs = t['value'][good]
+    # And the values we need to interpolate for.
+    rf = t['centreFrequency'][zeroes]
+    # And then interpolate.
+    iv = np.interp(rf, cf, vs)
+    t['value'][zeroes] = iv
     
 def templateFill(srcTemplate, destTemplate):
     # Fill in a template spectrum with values from another template, and do it with
