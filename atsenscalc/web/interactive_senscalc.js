@@ -869,7 +869,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 query('#modal-loading').removeClass('md-show');
 		 // Hide any messages that have popped up.
 		 query('#loading-long').addClass('md-hidden-message');
-		 query('#fountainG').addClass('md-hidden-message');
+		 query('#modalMeter').addClass('md-hidden-message');
 		 query('#loading-too-long').addClass('md-hidden-message');
 		 query('#loading-too-long-close').addClass('md-hidden-message');
 		 // Stop the timers.
@@ -1004,11 +1004,15 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 	     };
 
 
+	     // The time that we expect the calculation to take, in seconds.
+	     var expectedTime = 10;
+	     var bufferTime = 2;
+
 	     // Make a couple of timing elements that will tick when the loading process
 	     // takes too long.
 	     var loadTimer1 = new timing.Timer();
-	     // The "taking a while" tick is after 10 seconds.
-	     loadTimer1.setInterval(10000); 
+	     // The "taking a while" tick is a bit after the expected time.
+	     loadTimer1.setInterval((expectedTime + bufferTime) * 1000); 
 	     loadTimer1.onTick = function() {
 		 // Stop the timer.
 		 loadTimer1.stop();
@@ -1017,29 +1021,38 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 	     };
 
 	     var loadTimer2 = new timing.Timer();
-	     // The "probably failed" tick is after 40 seconds.
-	     loadTimer2.setInterval(40000);
+	     // The "probably failed" tick is after four times the expected time.
+	     loadTimer2.setInterval(expectedTime * 4 * 1000);
 	     loadTimer2.onTick = function() {
 		 // Stop the timer.
 		 loadTimer2.stop();
 		 // We hide the second message in the loading dialog, and then
 		 // show the third message and the close button.
 		 query('#loading-long').addClass('md-hidden-message');
-		 query('#fountainG').addClass('md-hidden-message');
+		 query('#modalMeter').addClass('md-hidden-message');
 		 query('#loading-too-long').removeClass('md-hidden-message');
 		 query('#loading-too-long-close').removeClass('md-hidden-message');
 	     };
+
+	     // The progress bar goes for the expected time.
+	     var loadProgress = fx.animateProperty({ 'node': dom.byId("modalProgress"),
+						     'properties': {
+							 'width': { 'start': 0, 'end': 100, 'units': '%' }
+						     },
+						     'duration': (expectedTime * 1000)
+						   });
 
 	     // Do some checks and then do the calculation.
 	     var beginCalculation = function() {
 		 // Begin by showing the loading dialog.
 		 showAlert('modal-loading');
 		 // And show the loading bubbles as well.
-		 query('#fountainG').removeClass('md-hidden-message');
+		 query('#modalMeter').removeClass('md-hidden-message');
 
 		 // Start the timers for load conditions.
 		 loadTimer1.start();
 		 loadTimer2.start();
+		 loadProgress.play({ 'gotoStart': true });
 
 		 var pack = {};
 		 pack['configuration'] = query('[name="data-array"]:checked').val();

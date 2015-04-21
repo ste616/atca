@@ -365,185 +365,134 @@ input[type=radio]:checked + label {
 }
 
 /* ======================================
-== THE LOADING DIALOG'S BUBBLE BAR
+== THE LOADING DIALOG'S PROGRESS BAR
 ** ====================================== */
 
-#fountainG {
-    margin:0px auto;
-    position:relative;
-    width:240px;
-    height:29px;
+.meter {
+    height: 20px;
+    position: relative;
+    margin: 60px 0 20px 0;
+    background: #555;
+    -moz-border-radius: 25px;
+    -webkit-border-radius: 25px;
+    border-radius: 25px;
+    padding: 10px;
+    -webkit-box-shadow: inset 0 -1px 1px rgba(255,255,255,0.3);
+    -moz-box-shadow   : inset 0 -1px 1px rgba(255,255,255,0.3);
+    box-shadow        : inset 0 -1px 1px rgba(255,255,255,0.3);
 }
 
-.fountainG {
-    position:absolute;
-    top:0;
-    background-color:#FFFFFF;
-    width:29px;
-    height:29px;
-    -moz-animation-name:bounce_fountainG;
-    -moz-animation-duration:1.3s;
-    -moz-animation-iteration-count:infinite;
-    -moz-animation-direction:normal;
-    -moz-transform:scale(.3);
-    -moz-border-radius:19px;
-    -webkit-animation-name:bounce_fountainG;
-    -webkit-animation-duration:1.3s;
-    -webkit-animation-iteration-count:infinite;
-    -webkit-animation-direction:normal;
-    -webkit-transform:scale(.3);
-    -webkit-border-radius:19px;
-    -ms-animation-name:bounce_fountainG;
-    -ms-animation-duration:1.3s;
-    -ms-animation-iteration-count:infinite;
-    -ms-animation-direction:normal;
-    -ms-transform:scale(.3);
-    -ms-border-radius:19px;
-    -o-animation-name:bounce_fountainG;
-    -o-animation-duration:1.3s;
-    -o-animation-iteration-count:infinite;
-    -o-animation-direction:normal;
-    -o-transform:scale(.3);
-    -o-border-radius:19px;
-    animation-name:bounce_fountainG;
-    animation-duration:1.3s;
-    animation-iteration-count:infinite;
-    animation-direction:normal;
-    transform:scale(.3);
-    border-radius:19px;
+.meter > span {
+    display: block;
+    height: 100%;
+    -webkit-border-top-right-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-topright: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    -webkit-border-top-left-radius: 20px;
+    -webkit-border-bottom-left-radius: 20px;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-bottomleft: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background-color: rgb(43,194,83);
+    background-image: -webkit-gradient(
+        linear,
+        left bottom,
+        left top,
+        color-stop(0, rgb(43,194,83)),
+        color-stop(1, rgb(84,240,84))
+    );
+    background-image: -moz-linear-gradient(
+        center bottom,
+        rgb(43,194,83) 37%,
+        rgb(84,240,84) 69%
+    );
+    -webkit-box-shadow:
+    inset 0 2px 9px  rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+    -moz-box-shadow:
+    inset 0 2px 9px  rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+    box-shadow:
+    inset 0 2px 9px  rgba(255,255,255,0.3),
+    inset 0 -2px 6px rgba(0,0,0,0.4);
+    position: relative;
+    overflow: hidden;
 }
 
-#fountainG_1 {
-    left:0;
-    -moz-animation-delay:0.52s;
-    -webkit-animation-delay:0.52s;
-    -ms-animation-delay:0.52s;
-    -o-animation-delay:0.52s;
-    animation-delay:0.52s;
+.meter > span:after, .animate > span > span {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background-image:
+    -webkit-gradient(linear, 0 0, 100% 100%,
+                     color-stop(.25, rgba(255, 255, 255, .2)),
+                     color-stop(.25, transparent), color-stop(.5, transparent),
+                     color-stop(.5, rgba(255, 255, 255, .2)),
+                     color-stop(.75, rgba(255, 255, 255, .2)),
+                     color-stop(.75, transparent), to(transparent)
+                    );
+    background-image:
+    -moz-linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, .2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, .2) 50%,
+        rgba(255, 255, 255, .2) 75%,
+        transparent 75%,
+        transparent
+    );
+    z-index: 1;
+    -webkit-background-size: 50px 50px;
+    -moz-background-size: 50px 50px;
+    -webkit-animation: move 2s linear infinite;
+    -webkit-border-top-right-radius: 8px;
+    -webkit-border-bottom-right-radius: 8px;
+    -moz-border-radius-topright: 8px;
+    -moz-border-radius-bottomright: 8px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+    -webkit-border-top-left-radius: 20px;
+    -webkit-border-bottom-left-radius: 20px;
+    -moz-border-radius-topleft: 20px;
+    -moz-border-radius-bottomleft: 20px;
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
+    overflow: hidden;
 }
 
-#fountainG_2 {
-    left:30px;
-    -moz-animation-delay:0.65s;
-    -webkit-animation-delay:0.65s;
-    -ms-animation-delay:0.65s;
-    -o-animation-delay:0.65s;
-    animation-delay:0.65s;
+.animate > span:after {
+    display: none;
 }
 
-#fountainG_3 {
-    left:60px;
-    -moz-animation-delay:0.78s;
-    -webkit-animation-delay:0.78s;
-    -ms-animation-delay:0.78s;
-    -o-animation-delay:0.78s;
-    animation-delay:0.78s;
+@-webkit-keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 50px 50px;
+    }
 }
 
-#fountainG_4 {
-    left:90px;
-    -moz-animation-delay:0.91s;
-    -webkit-animation-delay:0.91s;
-    -ms-animation-delay:0.91s;
-    -o-animation-delay:0.91s;
-    animation-delay:0.91s;
+.orange > span {
+    background-color: #f1a165;
+    background-image: -moz-linear-gradient(top, #f1a165, #f36d0a);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #f1a165),color-stop(1, #f36d0a));
+    background-image: -webkit-linear-gradient(#f1a165, #f36d0a);
 }
 
-#fountainG_5 {
-    left:120px;
-    -moz-animation-delay:1.04s;
-    -webkit-animation-delay:1.04s;
-    -ms-animation-delay:1.04s;
-    -o-animation-delay:1.04s;
-    animation-delay:1.04s;
+.red > span {
+    background-color: #f0a3a3;
+    background-image: -moz-linear-gradient(top, #f0a3a3, #f42323);
+    background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #f0a3a3),color-stop(1, #f42323));
+    background-image: -webkit-linear-gradient(#f0a3a3, #f42323);
 }
 
-#fountainG_6 {
-    left:150px;
-    -moz-animation-delay:1.17s;
-    -webkit-animation-delay:1.17s;
-    -ms-animation-delay:1.17s;
-    -o-animation-delay:1.17s;
-    animation-delay:1.17s;
-}
-
-#fountainG_7 {
-    left:180px;
-    -moz-animation-delay:1.3s;
-    -webkit-animation-delay:1.3s;
-    -ms-animation-delay:1.3s;
-    -o-animation-delay:1.3s;
-    animation-delay:1.3s;
-}
-
-#fountainG_8 {
-    left:210px;
-    -moz-animation-delay:1.43s;
-    -webkit-animation-delay:1.43s;
-    -ms-animation-delay:1.43s;
-    -o-animation-delay:1.43s;
-    animation-delay:1.43s;
-}
-
-@-moz-keyframes bounce_fountainG{
-0%{
-    -moz-transform:scale(1);
-    background-color:#FFFFFF;
-}
-
-100%{
-    -moz-transform:scale(.3);
-    background-color:#9FAEE5;
-}
-
-}
-
-@-webkit-keyframes bounce_fountainG{
-0%{
-    -webkit-transform:scale(1);
-    background-color:#FFFFFF;
-}
-
-100%{
-    -webkit-transform:scale(.3);
-    background-color:#9FAEE5;
-}
-
-}
-
-@-ms-keyframes bounce_fountainG{
-0%{
-    -ms-transform:scale(1);
-    background-color:#FFFFFF;
-}
-
-100%{
-    -ms-transform:scale(.3);
-    background-color:#9FAEE5;
-}
-
-}
-
-@-o-keyframes bounce_fountainG{
-0%{
-    -o-transform:scale(1);
-    background-color:#FFFFFF;
-}
-
-100%{
-    -o-transform:scale(.3);
-    background-color:#9FAEE5;
-}
-
-}
-
-@keyframes bounce_fountainG{
-0%{
-    transform:scale(1);
-    background-color:#FFFFFF;
-}
-
-100%{
-    transform:scale(.3);
-    background-color:#9FAEE5;
+.nostripes > span > span, .nostripes > span:after {
+    -webkit-animation: none;
+    background-image: none;
 }

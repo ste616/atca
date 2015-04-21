@@ -7,10 +7,10 @@
     <link href="http://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/ca_style.css">
     <link rel="stylesheet" type="text/css" href="css/topcoat-desktop-light.css">
-    <link rel="stylesheet" type="text/css" href="/jslib/dojo/1.9.0/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" type="text/css" href="/jslib/dojo/1.10.4/dijit/themes/claro/claro.css">
     <link rel="stylesheet" type="text/css" href="interactive_senscalc.css">
-    <script src="/jslib/dojo/configure.js"></script>
-    <script src="/jslib/dojo/1.9.2/dojo/dojo.js"></script>
+    <script src="/jslib/dojo/configure_dev.js"></script>
+    <script src="/jslib/dojo/1.10.4/dojo/dojo.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
       tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
@@ -1575,23 +1575,8 @@
 	  </p>
 	  <button class="md-close md-hidden-message" id="loading-too-long-close">
 	    Gotcha!</button>
-	  <div id="fountainG" class="md-hidden-message">
-	    <div id="fountainG_1" class="fountainG">
-	    </div>
-	    <div id="fountainG_2" class="fountainG">
-	    </div>
-	    <div id="fountainG_3" class="fountainG">
-	    </div>
-	    <div id="fountainG_4" class="fountainG">
-	    </div>
-	    <div id="fountainG_5" class="fountainG">
-	    </div>
-	    <div id="fountainG_6" class="fountainG">
-	    </div>
-	    <div id="fountainG_7" class="fountainG">
-	    </div>
-	    <div id="fountainG_8" class="fountainG">
-	    </div>
+	  <div class="meter" id="modalMeter">
+	    <span id="modalProgress" class="modalProgress"></span>
 	  </div>
 	</div>
       </div>
