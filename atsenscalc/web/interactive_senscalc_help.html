@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <link rel="stylesheet" type="text/css"
+          href="http://yui.yahooapis.com/3.4.1/build/cssreset/cssreset-min.css">
+    <link href="http://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="interactive_senscalc.css">
+    <script src="/jslib/dojo/configure_dev.js"></script>
+    <script src="/jslib/dojo/1.10.4/dojo/dojo.js"></script>
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+      tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
+      });
+    </script>
+    <script type="text/javascript" src="/jslib/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <title>ATCA Sensitivity Calculator - Help</title>
+
+  </head>
+  <body class="claro">
+    <div class="helpSection invisible" id="weighting">
+      <h2>Help: Image Weighting</h2>
+      The sensitivity calculator uses Robust weighting only when computing the image
+      weighting factors, since Robust weighting is preferable over Natural and Uniform
+      schemes. When using Robust weighting, Robust=2 is essentially Natural weighting,
+      and Robust=-2 is essentially Uniform. The weighting factor shown in the image
+      parameters table describes exactly how the image RMS noise would compare to a
+      traditionally Natural-weighted image.
+    </div>
+
+    <script src="interactive_senscalc_help.js"></script>
+  </body>
+</html>

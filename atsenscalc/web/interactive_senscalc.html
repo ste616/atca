@@ -17,6 +17,19 @@
       });
     </script>
     <script type="text/javascript" src="/jslib/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript">
+      function popup(myLink, windowName) {
+        if (! window.focus) return true;
+        var href;
+        if (typeof(myLink) == 'string') {
+          href = myLink;
+        } else {
+          href = myLink.href;
+        }
+        window.open(href, windowname, 'width=400, height=200, scrollbars=yes');
+        return false;
+      }
+    </script>
     <script src="interactive_senscalc.js"></script>
     <title>ATCA Sensitivity Calculator - Interactive Version</title>
   </head>
@@ -1284,7 +1297,7 @@
 	<h2>Continuum Information</h2>
 	<table class="results-parameter-table">
 	  <caption>Continuum Image Parameters</caption>
-	  <tr><th>Weighting:</th>
+	  <tr><th>Weighting (<span class="showHelp" name="weighting">?</span>):</th>
 	    <td id="results-continuum-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-continuum-weightingfactor"></span> x Natural</td></tr>

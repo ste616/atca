@@ -16,6 +16,7 @@
 .button-wrap-div { text-align: center; width: 100%; }
 h2 { font-family: 'Oxygen', sans-serif; }
 h3 { font-family: 'Oxygen', sans-serif; margin-left: 0.5em; }
+.helpSection > h2 { margin-bottom: 1em; font-size: 1.3em; color: #0d66a2; }
 .option-left { width: 48%; float: left; text-align: center; }
 .option-or { width: 2%; float: left; content: 'OR'; color: red; position: relative; top: 2em; }
 .option-right { width: 48%; float: right; text-align: center; }
@@ -211,6 +212,16 @@ input[type=radio]:checked + label {
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
     background-color:#e0f0fa;
     color: #0083e8;
+}
+
+.showHelp {
+    cursor: pointer;
+    color: yellow;
+    font-weight: bold;
+}
+
+.helpSection {
+    width: 95%; margin: 2em auto; font-family: 'Oxygen', sans-serif; font-weight: normal; text-align: left;
 }
 
 /* ===================================================================

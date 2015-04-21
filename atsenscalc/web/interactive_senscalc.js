@@ -120,6 +120,21 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 }
 	     });
 
+	     var popupHelp = function(divShow) {
+		 if (!window.focus) {
+		     return true;
+		 }
+		 var href = "interactive_senscalc_help.html#" + divShow;
+		 window.open(href, "calchelp", 'width=600, height=300, scrollbars=yes');
+		 return false;
+	     };
+
+	     // Make all the help icons popup the help page window.
+	     query('.showHelp').on('click', function(e) {
+		 var n = domAttr.get(e.target, 'name');
+		 popupHelp(n);
+	     });
+
 	     var errorChecks = function(cId) {
 		 // Error checking on some values.
 		 var myVal = domAttr.get(cId, 'value');
@@ -1035,12 +1050,13 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 	     };
 
 	     // The progress bar goes for the expected time.
-	     var loadProgress = fx.animateProperty({ 'node': dom.byId("modalProgress"),
-						     'properties': {
-							 'width': { 'start': 0, 'end': 100, 'units': '%' }
-						     },
-						     'duration': (expectedTime * 1000)
-						   });
+	     var loadProgress = fx.animateProperty({
+		 'node': dom.byId("modalProgress"),
+		 'properties': {
+		     'width': { 'start': 0, 'end': 100, 'units': '%' }
+		 },
+		 'duration': (expectedTime * 1000)
+	     });
 
 	     // Do some checks and then do the calculation.
 	     var beginCalculation = function() {
