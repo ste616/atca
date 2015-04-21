@@ -219,6 +219,9 @@ input[type=radio]:checked + label {
     color: yellow;
     font-weight: bold;
 }
+.lightBackground {
+    color: darkgray;
+}
 
 .helpSection {
     width: 95%; margin: 2em auto; font-family: 'Oxygen', sans-serif; font-weight: normal; text-align: left;
