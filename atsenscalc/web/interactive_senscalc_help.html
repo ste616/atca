@@ -25,7 +25,8 @@
       schemes. When using Robust weighting, Robust=2 is essentially Natural weighting,
       and Robust=-2 is essentially Uniform. The weighting factor shown in the image
       parameters table describes exactly how the image RMS noise would compare to a
-      traditionally Natural-weighted image.
+      traditionally Natural-weighted image. These factors have been determined using
+      simulations over a range of frequencies and hour-angle ranges.
     </div>
 
     <div class="helpSection invisible" id="weatherConditions">
@@ -40,6 +41,42 @@
       shown in the "best" case. You should also always do better than the "worst"
       case. The sensitivity shown for "typical" weather conditions should be very
       close to what you would get for a normal observation in the selected season.
+    </div>
+
+    <div class="helpSection invisible" id="rmsNoise">
+      <h2>Help: RMS noise level</h2>
+      The RMS noise level computed by the sensitivity calculator is:
+      <div>$\sigma_{\rm rms} = \frac{\sqrt{2} k {\rm T}_{\rm meas} W}{10^{-26} A_{\rm ant} \epsilon \sqrt{N_{\rm ant}(N_{\rm ant} - 1) \Delta\nu \tau}}$,</div>
+      where<br />
+      <ul>
+	<li>$\sigma_{\rm rms}$ is the RMS noise level, in units of mJy/beam,</li>
+	<li>$k$ is the Boltzmann constant, in units of ${\rm J}.{\rm K}^{-1}$,</li>
+	<li>${\rm T}_{\rm meas}$ is the system temperature, in units of K,</li>
+	<li>$W$ is the image weighting factor (where for Natural weighting $W=1$),</li>
+	<li>$A_{\rm ant}$ is the surface area of a single antenna, in units of ${\rm m}^{2}$,</li>
+	<li>$\epsilon$ is the efficiency of the antenna (where for a perfect antenna $\epsilon=1$),</li>
+	<li>$N_{\rm ant}$ is the number of antenna in the array,</li>
+	<li>$\Delta\nu$ is the bandwidth, in units of MHz,</li>
+	<li>$\tau$ is the integration time, in units of seconds.</li>
+      </ul>
+      <br />
+      This gives the sensitivity to an unpolarised point source at the phase
+      centre.
+    </div>
+
+    <div class="helpSection invisible" id="brightnessTemperature">
+      <h2>Help: Brightness Temperature Sensitivity</h2>
+      The brightness temperature sensitivity computed by the calculator is:
+      <div>$\sigma_{\rm BT} = \frac{10^{-26}\sigma_{\rm rms}\lambda^{2}}{2k} \frac{(180/\pi)^{2}}{\pi \theta_{\rm min} \theta_{\rm maj}}$,</div>
+      where<br />
+      <ul>
+	<li>$\sigma_{\rm BT}$ is the brightness temperature sensitivity, in units of K,</li>
+	<li>$\sigma_{\rm rms}$ is the RMS noise level, in units of Jy/beam,</li>
+	<li>$\lambda$ is the wavelength, in units of m,</li>
+	<li>$k$ is the Boltzmann constant, in units of ${\rm J}.{\rm K}^{-1}$,</li>
+	<li>$\theta_{\rm min}$ is the semi-minor axis length of the synthesised beam, in units of degrees,</li>
+	<li>$\theta_{\rm maj}$ is the semi-major axis length of the synthesised beam, in units of degrees.</li>
+      </ul>
     </div>
 
     <script src="interactive_senscalc_help.js"></script>
