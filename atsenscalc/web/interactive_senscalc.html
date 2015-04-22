@@ -7,22 +7,37 @@
     <link href="http://fonts.googleapis.com/css?family=Oxygen" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="/stylesheets/ca_style.css">
     <link rel="stylesheet" type="text/css" href="css/topcoat-desktop-light.css">
-    <link rel="stylesheet" type="text/css" href="/jslib/dojo/1.9.0/dijit/themes/claro/claro.css">
+    <link rel="stylesheet" type="text/css" href="/jslib/dojo/1.10.4/dijit/themes/claro/claro.css">
     <link rel="stylesheet" type="text/css" href="interactive_senscalc.css">
-    <script src="/jslib/dojo/configure.js"></script>
-    <script src="/jslib/dojo/1.9.2/dojo/dojo.js"></script>
+    <script src="/jslib/dojo/configure_dev.js"></script>
+    <script src="/jslib/dojo/1.10.4/dojo/dojo.js"></script>
     <script type="text/x-mathjax-config">
       MathJax.Hub.Config({
       tex2jax: { inlineMath: [['$','$'],['\\(','\\)']] }
       });
     </script>
     <script type="text/javascript" src="/jslib/mathjax/2.3/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript">
+      function popup(myLink, windowName) {
+        if (! window.focus) return true;
+        var href;
+        if (typeof(myLink) == 'string') {
+          href = myLink;
+        } else {
+          href = myLink.href;
+        }
+        window.open(href, windowname, 'width=400, height=200, scrollbars=yes');
+        return false;
+      }
+    </script>
     <script src="interactive_senscalc.js"></script>
     <title>ATCA Sensitivity Calculator - Interactive Version</title>
   </head>
   <body class="claro">
     <!--#include virtual="/includefiles/ca_header.html" -->  
     <h1>CABB Sensitivity Calculator</h1>
+    <div class="version-number">Version: 2015-April-22
+      (<span class="showHelp lightBackground" name="changeLog">Change Log</span>)</div>
     <div id="input-data">
       <h3>Data</h3>
       <table id="input-data-table">
@@ -56,7 +71,7 @@
 	      <p class="triangle-obtuse">
 		The array configuration that you want to use. Longer arrays will
 		give better angular resolution, while shorter arrays will give better
-		surface brightness sensitivity. Arrays prefixed with H are "hybrid"
+		brightness sensitivity. Arrays prefixed with H are "hybrid"
 		arrays, which allow imaging of sources near the celestial equator.
 	      </p>
 	      Array:
@@ -138,18 +153,21 @@
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
-		The furthest hour-angle you will observe your source at (an
+		The hour-angle range you will observe your source over (an
 		hour angle of 0 is at transit, when the source is at its
 		highest elevation). Observing over a larger range of HA will
 		result in improved uv-coverage, but may mean observing at
 		lower elevations.
 	      </p>
-	      HA Limit:
+	      HA Limits:
 	    </div>
 	  </th>
-	  <td><input type="text" class="topcoat-text-input" placeholder="hour-angle"
-		     value="6" name="data-hourangle-limit" id="data-hourangle-limit" size="10">
-	    <label for="data-hourangle-limit"> hours</label></td></tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="min"
+		     value="-6" name="data-hourangle-limit-min" id="data-hourangle-limit-min" size="3">
+	    <label for="data-hourangle-limit-min">(min) to (max)</label>
+	    <input type="text" class="topcoat-text-input" placeholder="max"
+		   value="6" name="data-hourangle-limit-max" id="data-hourangle-limit-max" size="3">
+	    <label for="data-hourangle-limit-max"> hours</label></td></tr>
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
@@ -185,7 +203,7 @@
 	  <td>
 	    <input type="radio" id="data-image-weight-R2" name="data-image-weight"
 		   value="R2" checked>
-	    <label for="data-image-weight-N">Natural</label>
+	    <label for="data-image-weight-R2">Natural</label>
 	    <input type="radio" id="data-image-weight-R1" name="data-image-weight"
 		   value="R1">
 	    <label for="data-image-weight-R1">Robust=1</label>
@@ -199,19 +217,93 @@
 		   value="R-2">
 	    <label for="data-image-weight-R-2">Uniform</label>
 	</td></tr>
-	<tr><th>
+        <tr><th>
+	    <div class="input-data-table-help">
+	      <p class="triangle-obtuse">
+		The weather conditions used to calculate the sensitivities are
+		selected by using the season in which the observations will be
+		made.
+	      </p>
+	      Season:
+	    </div>
+	  </th>
+	  <td>
+	    <input type="radio" id="data-season-annual" name="data-season"
+		   value="ANNUAL" checked>
+	    <label for="data-season-annual">Annual</label>
+	    <input type="radio" id="data-season-aprs" name="data-season"
+		   value="APRS">
+	    <label for="data-season-aprs">APRS</label>
+	    <input type="radio" id="data-season-octs" name="data-season"
+		   value="OCTS">
+	    <label for="data-season-octs">OCTS</label>
+	    <input type="radio" id="data-season-summer" name="data-season"
+		   value="SUMMER">
+	    <label for="data-season-summer">Summer</label>
+	    <input type="radio" id="data-season-autumn" name="data-season"
+		   value="AUTUMN">
+	    <label for="data-season-autumn">Autumn</label>
+	    <input type="radio" id="data-season-winter" name="data-season"
+		   value="WINTER">
+	    <label for="data-season-winter">Winter</label>
+	    <input type="radio" id="data-season-spring" name="data-season"
+		   value="SPRING">
+	    <label for="data-season-spring">Spring</label>
+	    <input type="radio" id="data-season-jan" name="data-season"
+		   value="JAN">
+	    <label for="data-season-jan">Jan</label>
+	    <input type="radio" id="data-season-feb" name="data-season"
+		   value="FEB">
+	    <label for="data-season-feb">Feb</label>
+	    <input type="radio" id="data-season-mar" name="data-season"
+		   value="MAR">
+	    <label for="data-season-mar">Mar</label>
+	    <input type="radio" id="data-season-apr" name="data-season"
+		   value="APR">
+	    <label for="data-season-apr">Apr</label>
+	    <input type="radio" id="data-season-may" name="data-season"
+		   value="MAY">
+	    <label for="data-season-may">May</label>
+	    <input type="radio" id="data-season-jun" name="data-season"
+		   value="JUN">
+	    <label for="data-season-jun">Jun</label>
+	    <input type="radio" id="data-season-jul" name="data-season"
+		   value="JUL">
+	    <label for="data-season-jul">Jul</label>
+	    <input type="radio" id="data-season-aug" name="data-season"
+		   value="AUG">
+	    <label for="data-season-aug">Aug</label>
+	    <input type="radio" id="data-season-sep" name="data-season"
+		   value="SEP">
+	    <label for="data-season-sep">Sep</label>
+	    <input type="radio" id="data-season-oct" name="data-season"
+		   value="OCT">
+	    <label for="data-season-oct">Oct</label>
+	    <input type="radio" id="data-season-nov" name="data-season"
+		   value="NOV">
+	    <label for="data-season-nov">Nov</label>
+	    <input type="radio" id="data-season-dec" name="data-season"
+		   value="DEC">
+	    <label for="data-season-dec">Dec</label>
+	</td></tr>
+        <tr><th rowspan="2">
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
 		The number of frequency channels to average together, using
 		simple averaging. Hanning smoothing is not required for
-		CABB's polyphase filter bank.
+		CABB's polyphase filter bank. Smoothing can be changed for
+		both the continuum and zoom bands separately here.
 	      </p>
 	      Smoothing:
 	    </div>
 	  </th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="1" name="data-smoothing" id="data-smoothing" size="10">
-	    <label for="data-smoothing"> channels</label></td></tr>
+		     value="1" name="data-smoothing-continuum" id="data-smoothing-continuum" size="10">
+	    <label for="data-smoothing-continuum"> continuum channels</label></td></tr>
+	<tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="width"
+		     value="1" name="data-smoothing-zoom" id="data-smoothing-zoom" size="10">
+	    <label for="data-smoothing-zoom"> zoom channels</label></td></tr>
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
@@ -237,19 +329,26 @@
 	  <td><label class="topcoat-switch">
 	      <input type="checkbox" class="topcoat-switch__input" id="data-remove-rfi" checked>
 	      <div class="topcoat-switch__toggle"></div></label></td></tr>
-	<tr><th>
+	<tr><th rowspan="2">
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
-		Remove this many channels from each edge. The CABB bandpass
-		filters have a half-power width of approximately 32 MHz. Miriad's
-		atlod will by default remove about 100 MHz from each edge.
+		Remove this many channels from each edge of the continuum or
+		zoom bands (each separately specified). The CABB bandpass
+		filters have a half-power width of approximately 32 MHz in the
+		continuum band. Miriad's
+		atlod will by default remove about 100 MHz from each edge. For the
+		zooms, roughly 10 channels on each edge are not very useful.
 	      </p>
 	      Rem Edge:
 	    </div>
 	  </th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="0" name="data-remove-edge" id="data-remove-edge" size="10">
-	    <label for="data-remove-edge"> channels</label></td></tr>
+	 	     value="0" name="data-remove-edge-continuum" id="data-remove-edge-continuum" size="10">
+	    <label for="data-remove-edge-continuum"> continuum channels</label></td></tr>
+        <tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="width"
+	  	     value="0" name="data-remove-edge-zoom" id="data-remove-edge-zoom" size="10">
+	    <label for="data-remove-edge-zoom"> zoom channels</label></td></tr>
 	<tr><th>
 	    <div class="input-data-table-help">
 	      <p class="triangle-obtuse">
@@ -286,7 +385,7 @@
 	      <p class="triangle-obtuse">
 		If you selected "Sensitivity" above, enter the required 
 		sensitivity in this box and select the appropriate units 
-		(mJy/beam or K). You should then select whether you require
+		(mJy/beam or mK). You should then select whether you require
 		this sensitivity for a continuum signal in the 2 GHz band
 		("Continuum"), for a spectral signal in the 2 GHz band
 		("Spectrum"), or for a spectral signal in the zoom band
@@ -321,10 +420,10 @@
 	<tr><th>with:</th>
 	  <td>
 	    <input type="radio" id="data-sensitivity-weather-best" name="data-sensitivity-weather"
-		   value="best" checked>
+		   value="best">
 	    <label for="data-sensitivity-weather-best">Best</label>
 	    <input type="radio" id="data-sensitivity-weather-typical" name="data-sensitivity-weather"
-		   value="typical">
+		   value="typical" checked>
 	    <label for="data-sensitivity-weather-typical">Typical</label>
 	    <input type="radio" id="data-sensitivity-weather-worst" name="data-sensitivity-weather"
 		   value="worst">
@@ -371,18 +470,6 @@
 	  Repeatedly pressing the button for the recommended frequency in a
 	  band with more than one recommended frequency will cycle through
 	  those frequencies.
-	</div><br />
-	<div class="option-equations">
-	  <h3>Relevant Equations</h3>
-	  This parameter is directly involved in the equations for:
-	  <ul>
-	    <li>Primary Beam FWHM = $c / (22\mbox{ m} \times \nu),$<br />where $\nu$ is the
-	      frequency entered here. A higher frequency will result in a smaller
-	      FWHM.</li>
-	    <li>Synthesised Beam semi-minor axis = $(w \times c) / (\nu * B),$<br />
-	      where $\nu$ is the frequency entered here. A higher frequency will result in
-	      a smaller FWHM.</li>
-	  </ul>
 	</div><br />
 	<div class="option-left">
 	  <h3>The recommended frequency for the band</h3>
@@ -507,7 +594,8 @@
 	  at lower elevations, which degrades the sensitivity. In the
 	  mm bands, it is often better to limit your observations
 	  to elevations above 30 degrees. You can also limit your
-	  observations to a small hour-angle range, if you are
+	  observations to a specific hour-angle range, if you are
+	  observing for different times around transit, or are
 	  concerned about shadowing in the array you choose
 	  (shadowing diagrams can be found
 	  <a href="http://www.narrabri.atnf.csiro.au/observing/users_guide/html/new_atug_58.html#Shadowing-Diagrams">
@@ -519,10 +607,13 @@
 	    <td><input type="text" class="topcoat-text-input" placeholder="elevation"
 		       value="12" name="interactive-elevation-limit" id="interactive-elevation-limit" size="10">
 	      <label for="interactive-elevation-limit"> degrees</label></td></tr>
-	  <tr><th>Hour-angle Limit:</th>
-	    <td><input type="text" class="topcoat-text-input" placeholder="hour-angle"
-		       value="6" name="interactive-hourangle-limit" id="interactive-hourangle-limit" size="10">
-	      <label for="interactive-hourangle-limit"> hours</label></td></tr>
+	  <tr><th>Hour-angle Limits:</th>
+	    <td><input type="text" class="topcoat-text-input" placeholder="min"
+		       value="-6" name="interactive-hourangle-limit-min" id="interactive-hourangle-limit-min" size="3">
+	      <label for="interactive-hourangle-limit-min">(min) to (max)</label>
+	      <input type="text" class="topcoat-text-input" placeholder="max"
+		     value="6" name="interactive-hourangle-limit-max" id="interactive-hourangle-limit-max" size="3">
+	      <label for="interactive-hourangle-limit-max"> hours</label></td></tr>
 	</table>
       </div> <!-- #panel-observation-properties -->
       <div class="interview-panel" id="panel-calculation-mode">
@@ -574,7 +665,7 @@
 	  conditions you specify.<br />
 	  Put the sensitivity in the entry box,
 	  and select the appropriate units (mJy/beam for a spectral
-	  or continuum signal, or Kelvin for surface brightness).
+	  or continuum signal, or milli-Kelvin for surface brightness).
 	  <br />
 	  Then select the band in which you require the sensitivity,
 	  from "Continuum" (a continuum signal in the 2 GHz band),
@@ -595,7 +686,7 @@
 		<label for="interactive-sensitivity-units-mjy">mJy/beam</label>
 		<input type="radio" id="interactive-sensitivity-units-k" name="interactive-sensitivity-units"
 		       value="K">
-		<label for="interactive-sensitivity-units-k">K</label>
+		<label for="interactive-sensitivity-units-k">mK</label>
 	      </label>
 	  </td></tr>
 	  <tr><th>Required Band:</th>
@@ -613,10 +704,10 @@
 	  <tr><th>Weather Conditions:</th>
 	    <td>
 	    <input type="radio" id="interactive-sensitivity-weather-best" name="interactive-sensitivity-weather"
-		   value="best" checked>
+		   value="best">
 	    <label for="interactive-sensitivity-weather-best">Best</label>
 	    <input type="radio" id="interactive-sensitivity-weather-typical" name="interactive-sensitivity-weather"
-		   value="typical">
+		   value="typical" checked>
 	    <label for="interactive-sensitivity-weather-typical">Typical</label>
 	    <input type="radio" id="interactive-sensitivity-weather-worst" name="interactive-sensitivity-weather"
 		   value="worst">
@@ -641,8 +732,9 @@
 	      occasionally present (eg. weather radar) will not be counted
 	      in this item.</li>
 	    <li><strong>Edge channels:</strong> the CABB bandpass filter
-	      degrades the sensitivity at the edges of the band; the sensitivity
-	      of the 32 MHz on each edge is most affected.</li>
+	      degrades the sensitivity at the edges of the continuum band; the sensitivity
+	      of the 32 MHz on each edge is most affected. For zooms, the 10 edge
+	      channels are usually not very useful.</li>
 	  </ul>
 	</div>
 	<table class="interactive-table">
@@ -654,9 +746,14 @@
 	    <td><label class="topcoat-switch">
 		<input type="checkbox" class="topcoat-switch__input" id="interactive-remove-rfi" checked>
 		<div class="topcoat-switch__toggle"></div></label></td></tr>
-	  <tr><th>Edge channels:</th>
+	  <tr><th rowspan="2">Edge channels:</th>
 	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="0" name="interactive-remove-edge" id="interactive-remove-edge" size="10"></td></tr>
+		     value="0" name="interactive-remove-edge-continuum" id="interactive-remove-edge-continuum" size="10">
+	    <label for="interactive-remove-edge-continuum"> continuum channels</label></td></tr>
+	  <tr>
+	  <td><input type="text" class="topcoat-text-input" placeholder="width"
+		     value="0" name="interactive-remove-edge-zoom" id="interactive-remove-edge-zoom" size="10">
+	    <label for="interactive-remove-edge-zoom"> zoom channels</label></td></tr>
 	</table>
       </div> <!-- #panel-flagging -->
       <div class="interview-panel" id="panel-spectral-frequency">
@@ -680,24 +777,6 @@
 	  width and resolution of your observations.<br /><br />
 	  You should also specify whether you expect to use the 2 GHz CABB
 	  spectral band to detect the line, or one or more of the CABB zoom bands.
-	</div><br />
-	<div class="option-equations">
-	  <h3>Relevant Equations</h3>
-	  These parameters are directly involved in the equations for:
-	  <ul>
-	    <li>Primary Beam FWHM = $c / (22\mbox{ m} \times \nu),$<br />where $\nu$ is the
-	      line frequency entered here. A higher frequency will result in a smaller
-	      FWHM.</li>
-	    <li>Synthesised Beam semi-minor axis = $(w \times c) / (\nu * B),$<br />
-	      where $\nu$ is the line frequency entered here. A higher frequency will result in
-	      a smaller FWHM.</li>
-	    <li>Velocity coverage = $(\mbox{BW} \times c) / \nu_{\rm rest},$<br />
-	      where $\nu_{\rm rest}$ is the line rest frequency entered here. A higher rest
-	      frequency will result in a smaller velocity coverage.</li>
-	    <li>Velocity resolution = $(\Delta\nu \times s_{\rm chan} \times c) / \nu_{\rm rest},$<br />
-	      where $\nu_{\rm rest}$ is the line rest frequency entered here. A higher rest
-	      frequency will result in an increased velocity resolution.</li>
-	  </ul>
 	</div><br />
 	<table class="interactive-table">
 	  <tr><th>Observed Line frequency:</th>
@@ -805,39 +884,134 @@
 	  If you require a lower noise level in each output plane, and you don't
 	  require the resolution provided by the CABB channelisation, then you
 	  may want to choose to smooth your data in the imaging process. With CABB's
-	  polyphase filterbank design, Hanning smoothing is not required.
+	  polyphase filterbank design, Hanning smoothing is not required. You can smooth
+	  in either the continuum band or the zoom band, or both, with different levels
+	  of smoothing in each.
 	</div>
 	<table class="interactive-table">
 	  <tr><th>Weighting scheme:</th>
 	    <td>
-	      <div class="topcoat-tab-bar">
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R2" checked>
-		  <button class="topcoat-tab-bar__button">Natural</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R1">
-		  <button class="topcoat-tab-bar__button">Robust=1</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R0">
-		  <button class="topcoat-tab-bar__button">Robust=0</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R-1">
-		  <button class="topcoat-tab-bar__button">Robust=-1</button>
-		</label>
-		<label class="topcat-tab-bar__item">
-		  <input type="radio" name="interactive-cube-weight" value="R-2">
-		  <button class="topcoat-tab-bar__button">Uniform</button>
-		</label>
-	  </div></td></tr>
-	  <tr><th>Smoothing:</th>
-	  <td><input type="text" class="topcoat-text-input" placeholder="width"
-		     value="1" name="interactive-smoothing" id="interactive-smoothing" size="10">
-	    <label for="interactive-smoothing"> channels</label></td></tr>
+	      <input type="radio" id="interactive-cube-weight-R2" name="interactive-cube-weight"
+		     value="R2" checked>
+	      <label for="interactive-cube-weight-R2">Natural</label>
+	      <input type="radio" id="interactive-cube-weight-R1" name="interactive-cube-weight"
+		     value="R1">
+	      <label for="interactive-cube-weight-R1">Robust=1</label>
+	      <input type="radio" id="interactive-cube-weight-R0" name="interactive-cube-weight"
+		     value="R0">
+	      <label for="interactive-cube-weight-R0">Robust=0</label>
+	      <input type="radio" id="interactive-cube-weight-R-1" name="interactive-cube-weight"
+		     value="R-1">
+	      <label for="interactive-cube-weight-R-1">Robust=-1</label>
+	      <input type="radio" id="interactive-cube-weight-R-2" name="interactive-cube-weight"
+		     value="R-2">
+	      <label for="interactive-cube-weight-R-2">Uniform</label>
+	  </td></tr>
+	  <tr><th rowspan="2">Smoothing:</th>
+	    <td><input type="text" class="topcoat-text-input" placeholder="width"
+		       value="1" name="interactive-smoothing-continuum" id="interactive-smoothing-continuum" size="10">
+	      <label for="interactive-smoothing-continuum"> continuum channels</label></td></tr>
+	  <tr>
+	    <td><input type="text" class="topcoat-text-input" placeholder="width"
+		       value="1" name="interactive-smoothing-zoom" id="interactive-smoothing-zoom" size="10">
+	      <label for="interactive-smoothing-zoom"> zoom channels</label></td></tr>
 	</table>
       </div> <!-- #panel-spectral-imaging -->
+
+      <div class="interview-panel" id="panel-season">
+	<h2>When will you observe?</h2>
+	<div class="option-help">
+	  The sensitivity calculator determines the best, typical and worst weather
+	  conditions based on the time of year you will observe. You should select
+	  the season below that your observations will be made in. The actual weather
+	  conditions that the calculator uses will displayed alongside the results.
+	  <br /><br />
+	  The choices are:
+	  <br /><br />
+	  <ul>
+	    <li><strong>Annual</strong>: choose this if you don't know when your observations
+	      may be scheduled, or you would like to know the absolute best and worst conditions
+	      that are seen at the ATCA.</li>
+	    <li><strong>APRS</strong>: choose this if you are proposing to observe in the
+	      April 1 - September 30 semester.</li>
+	    <li><strong>OCTS</strong>: choose this if you are proposing to observe in the
+	      October 1 - March 31 semester.</li>
+	    <li><strong>Summer</strong>: weather conditions present between December 1 and
+	      February 28.</li>
+	    <li><strong>Autumn</strong>: weather conditions present between March 1 and
+	      May 31.</li>
+	    <li><strong>Winter</strong>: weather conditions present between June 1 and
+	      August 31.</li>
+	    <li><strong>Spring</strong>: weather conditions present between September 1 and
+	      November 30.</li>
+	    <li><strong>Jan/Feb/Mar/Apr/May/Jun/Jul/Aug/Sep/Oct/Nov/Dec</strong>: weather
+	      conditions present in each particular month.</li>
+	  </ul><br />
+	</div>
+	<table class="interactive-table">
+          <tr><th>Season:</th>
+	    <td>
+	    <input type="radio" id="interactive-season-annual" name="interactive-season"
+		   value="ANNUAL" checked>
+	    <label for="interactive-season-annual">Annual</label>
+	    <input type="radio" id="interactive-season-aprs" name="interactive-season"
+		   value="APRS">
+	    <label for="interactive-season-aprs">APRS</label>
+	    <input type="radio" id="interactive-season-octs" name="interactive-season"
+		   value="OCTS">
+	    <label for="interactive-season-octs">OCTS</label>
+	    <input type="radio" id="interactive-season-summer" name="interactive-season"
+		   value="SUMMER">
+	    <label for="interactive-season-summer">Summer</label>
+	    <input type="radio" id="interactive-season-autumn" name="interactive-season"
+		   value="AUTUMN">
+	    <label for="interactive-season-autumn">Autumn</label>
+	    <input type="radio" id="interactive-season-winter" name="interactive-season"
+		   value="WINTER">
+	    <label for="interactive-season-winter">Winter</label>
+	    <input type="radio" id="interactive-season-spring" name="interactive-season"
+		   value="SPRING">
+	    <label for="interactive-season-spring">Spring</label>
+	    <input type="radio" id="interactive-season-jan" name="interactive-season"
+		   value="JAN">
+	    <label for="interactive-season-jan">Jan</label>
+	    <input type="radio" id="interactive-season-feb" name="interactive-season"
+		   value="FEB">
+	    <label for="interactive-season-feb">Feb</label>
+	    <input type="radio" id="interactive-season-mar" name="interactive-season"
+		   value="MAR">
+	    <label for="interactive-season-mar">Mar</label>
+	    <input type="radio" id="interactive-season-apr" name="interactive-season"
+		   value="APR">
+	    <label for="interactive-season-apr">Apr</label>
+	    <input type="radio" id="interactive-season-may" name="interactive-season"
+		   value="MAY">
+	    <label for="interactive-season-may">May</label>
+	    <input type="radio" id="interactive-season-jun" name="interactive-season"
+		   value="JUN">
+	    <label for="interactive-season-jun">Jun</label>
+	    <input type="radio" id="interactive-season-jul" name="interactive-season"
+		   value="JUL">
+	    <label for="interactive-season-jul">Jul</label>
+	    <input type="radio" id="interactive-season-aug" name="interactive-season"
+		   value="AUG">
+	    <label for="interactive-season-aug">Aug</label>
+	    <input type="radio" id="interactive-season-sep" name="interactive-season"
+		   value="SEP">
+	    <label for="interactive-season-sep">Sep</label>
+	    <input type="radio" id="interactive-season-oct" name="interactive-season"
+		   value="OCT">
+	    <label for="interactive-season-oct">Oct</label>
+	    <input type="radio" id="interactive-season-nov" name="interactive-season"
+		   value="NOV">
+	    <label for="interactive-season-nov">Nov</label>
+	    <input type="radio" id="interactive-season-dec" name="interactive-season"
+		   value="DEC">
+	    <label for="interactive-season-dec">Dec</label>
+	  </td></tr>
+	</table>
+      </div> <!-- #panel-season -->
+
       <div class="interview-panel" id="panel-calculate-button">
 	<h2>Ready to calculate!</h2>
 	<div class="option-help">
@@ -865,34 +1039,38 @@
 	  <ul>
 	    <li>With <span id="results-summary-continuum-integration-time"></span>
 	      of on-source integration time,</li>
-	    <li>in best weather,</li>
+	    <li>in typical weather (<span class="showHelp lightBackground" name="weatherConditions">help?</span>),</li>
 	    <li>in the 2 GHz band centred at a frequency of
 	      <span id="results-summary-continuum-integration-centralfreq"></span>,</li>
 	    <li>in a continuum image made with 
 	      <span id="results-summary-continuum-integration-weighting"></span>
-	      weighting,</li>
+	      weighting (<span class="showHelp lightBackground" name="weighting">help?</span>),</li>
 	  </ul>
 	  <p>you will achieve
 	    <ul>
-	      <li>a surface brightness sensitivity of
-		<span id="results-summary-continuum-integration-surfacebrightness"></span>,</li>
+	      <li>a brightness sensitivity of
+		<span id="results-summary-continuum-integration-surfacebrightness"></span>
+		(<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
 	      <li>and an RMS noise level of
-		<span id="results-summary-continuum-integration-sensitivity"></span>.</li>
+		<span id="results-summary-continuum-integration-sensitivity"></span>
+		(<span class="showHelp lightBackground" name="rmsNoise">help?</span>).</li>
 	    </ul>
 	  </p>
 	</div> <!-- #results-summary-continuum-integration -->
 	<div class="results-summary choice-continuum" id="results-summary-continuum-sensitivity">
 	  <p>To make a continuum image</p>
 	  <ul>
-	    <li>in <span id="results-summary-continuum-sensitivity-weather"></span> weather,</li>
+	    <li>in <span id="results-summary-continuum-sensitivity-weather"></span> weather (<span class="showHelp lightBackground" name="weatherConditions">help?</span>),</li>
 	    <li>in the 2 GHz band centred at a frequency of
 	      <span id="results-summary-continuum-sensitivity-centralfreq"></span>,</li>
 	    <li>with <span id="results-summary-continuum-sensitivity-weighting"></span>
-	      weighting,</li>
-	    <li>with a surface brightness sensitivity of
-	      <span id="results-summary-continuum-sensitivity-surfacebrightness"></span>,</li>
+	      weighting (<span class="showHelp lightBackground" name="weighting">help?</span>),</li>
+	    <li>with a brightness sensitivity of
+	      <span id="results-summary-continuum-sensitivity-surfacebrightness"></span>
+	      (<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
 	    <li>or an RMS noise level of
-	      <span id="results-summary-continuum-sensitivity-sensitivity"></span>,</li>
+	      <span id="results-summary-continuum-sensitivity-sensitivity"></span>
+	      (<span class="showHelp lightBackground" name="rmsNoise">help?</span>),</li>
 	  </ul>
 	  <p>will require <span id="results-summary-continuum-sensitivity-time"></span>
 	    of on-source integration time.</p>
@@ -902,41 +1080,47 @@
 	  <ul>
 	    <li>With <span id="results-summary-spectral-integration-time"></span>
 	      of on-source integration time,</li>
-	    <li>in best weather,</li>
+	    <li>in typical weather (<span class="showHelp lightBackground" name="weatherConditions">help?</span>),</li>
 	    <li>in the 2 GHz band centred at a frequency of
 	      <span id="results-summary-spectral-integration-centralfreq"></span>,</li>
 	    <li>in a cube made with 
 	      <span id="results-summary-spectral-integration-weighting"></span>
-	      weighting,</li>
+	      weighting (<span class="showHelp lightBackground" name="weighting">help?</span>),</li>
 	  </ul>
 	  <p>each plane will have
 	    <ul>
 	      <li>a velocity width of
-		<span id="results-summary-spectral-integration-channelwidth"></span>,</li>
-	      <li>a surface brightness sensitivity of
-		<span id="results-summary-spectral-integration-surfacebrightness"></span>,</li>
+		<span id="results-summary-spectral-integration-channelwidth"></span>
+		(<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
+	      <li>a brightness sensitivity of
+		<span id="results-summary-spectral-integration-surfacebrightness"></span>
+		(<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
 	      <li>and an RMS noise level of
-		<span id="results-summary-spectral-integration-sensitivity"></span>.</li>
+		<span id="results-summary-spectral-integration-sensitivity"></span>
+		(<span class="showHelp lightBackground" name="rmsNoise">help?</span>).</li>
 	    </ul>
 	  </p>
 	</div> <!-- results-summary-spectral-integration -->
 	<div class="results-summary choice-spectral" id="results-summary-spectral-sensitivity">
 	  <p>To make a cube</p>
 	  <ul>
-	    <li>in <span id="results-summary-spectral-sensitivity-weather"></span> weather,</li>
+	    <li>in <span id="results-summary-spectral-sensitivity-weather"></span> weather (<span class="showHelp lightBackground" name="weatherConditions">help?</span>),</li>
 	    <li>using the 2 GHz band centred at a frequency of
 	      <span id="results-summary-spectral-sensitivity-centralfreq"></span>,</li>
 	    <li>with <span id="results-summary-spectral-sensitivity-weighting"></span>
-	      weighting,</li>
+	      weighting (<span class="showHelp lightBackground" name="weighting">help?</span>),</li>
 	  </ul>
 	  <p>with each plane having a</p>
 	  <ul>
 	    <li>a velocity width of
-	      <span id="results-summary-spectral-sensitivity-channelwidth"></span>,</li>
-	    <li>a surface brightness sensitivity of
-	      <span id="results-summary-spectral-sensitivity-surfacebrightness"></span>,</li>
+	      <span id="results-summary-spectral-sensitivity-channelwidth"></span>
+	      (<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
+	    <li>a brightness sensitivity of
+	      <span id="results-summary-spectral-sensitivity-surfacebrightness"></span>
+	      (<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
 	    <li>or an RMS noise level of
-	      <span id="results-summary-spectral-sensitivity-sensitivity"></span>,</li>
+	      <span id="results-summary-spectral-sensitivity-sensitivity"></span>
+	      (<span class="showHelp lightBackground" name="rmsNoise">help?</span>),</li>
 	  </ul>
 	  <p>will require <span id="results-summary-spectral-sensitivity-time"></span>
 	    of on-source integration time.</p>
@@ -946,48 +1130,54 @@
 	  <ul>
 	    <li>With <span id="results-summary-zoom-integration-time"></span>
 	      of on-source integration time,</li>
-	    <li>in best weather,</li>
+	    <li>in typical weather (<span class="showHelp lightBackground" name="weatherConditions">help?</span>),</li>
 	    <li>in the zoom band made up of 
-	      <span id="results-summary-zoom-integration-nzooms"></span> individual zoom
+	      <span id="results-summary-zoom-integration-nzooms" class="nounits"></span> individual zoom
 	      channels, and centred at a frequency of
 	      <span id="results-summary-zoom-integration-centralfreq"></span>,</li>
 	    <li>in a cube made with 
 	      <span id="results-summary-zoom-integration-weighting"></span>
-	      weighting,</li>
+	      weighting (<span class="showHelp lightBackground" name="weighting">help?</span>),</li>
 	  </ul>
 	  <p>each plane will have
 	    <ul>
 	      <li>a velocity width of
-		<span id="results-summary-zoom-integration-channelwidth"></span>,</li>
-	      <li>a surface brightness sensitivity of
-		<span id="results-summary-zoom-integration-surfacebrightness"></span>,</li>
+		<span id="results-summary-zoom-integration-channelwidth"></span>
+		(<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
+	      <li>a brightness sensitivity of
+		<span id="results-summary-zoom-integration-surfacebrightness"></span>
+		(<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
 	      <li>and an RMS noise level of
-		<span id="results-summary-zoom-integration-sensitivity"></span>.</li>
+		<span id="results-summary-zoom-integration-sensitivity"></span>
+		(<span class="showHelp lightBackground" name="rmsNoise">help?</span>).</li>
 	    </ul>
 	  </p>
 	</div> <!-- results-summary-zoom-integration -->
 	<div class="results-summary choice-zoom" id="results-summary-zoom-sensitivity">
 	  <p>To make a cube</p>
 	  <ul>
-	    <li>in <span id="results-summary-zoom-sensitivity-weather"></span> weather,</li>
+	    <li>in <span id="results-summary-zoom-sensitivity-weather"></span> weather (<span class="showHelp lightBackground" name="weatherConditions">help?</span>),</li>
 	    <li>using the zoom band made up of
-	      <span id="results-summary-zoom-sensitivity-nzooms"></span> individual zoom
+	      <span id="results-summary-zoom-sensitivity-nzooms" class="nounits"></span> individual zoom
 	      bands, and centred at a frequency of
 	      <span id="results-summary-zoom-sensitivity-centralfreq"></span>,</li>
 	    <li>with <span id="results-summary-zoom-sensitivity-weighting"></span>
-	      weighting,</li>
+	      weighting (<span class="showHelp lightBackground" name="weighting">help?</span>),</li>
 	  </ul>
 	  <p>with each plane having a</p>
 	  <ul>
 	    <li>a velocity width of
-	      <span id="results-summary-zoom-sensitivity-channelwidth"></span>,</li>
-	    <li>a surface brightness sensitivity of
-	      <span id="results-summary-zoom-sensitivity-surfacebrightness"></span>,</li>
+	      <span id="results-summary-zoom-sensitivity-channelwidth"></span>
+	      (<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
+	    <li>a brightness sensitivity of
+	      <span id="results-summary-zoom-sensitivity-surfacebrightness"></span>
+	      (<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
 	    <li>or an RMS noise level of
-	      <span id="results-summary-zoom-sensitivity-sensitivity"></span>,</li>
+	      <span id="results-summary-zoom-sensitivity-sensitivity"></span>
+	      (<span class="showHelp lightBackground" name="rmsNoise">help?</span>),</li>
 	  </ul>
 	  <p>will require <span id="results-summary-zoom-sensitivity-time"></span>
-	    minutes of on-source integration time.</p>
+	    of on-source integration time.</p>
 	</div> <!-- #results-summary-zoom-sensitivity -->
 	<div class="navigation-permanent">
 	  <div class="navigation-previous">
@@ -1017,7 +1207,7 @@
 	  <tr><th>Number of Baselines:</th>
 	    <td id="results-array-nbaselines"></td></tr>
 	  <tr><th>Longest Baseline:</th>
-	    <td><span id="results-array-longestbaseline"></span> m</td></tr>
+	    <td><span id="results-array-longestbaseline"></span></td></tr>
 	  <tr><th>Antenna Efficiency:</th>
 	    <td id="results-array-efficiency"></td></tr>
 	</table>
@@ -1029,12 +1219,12 @@
 	      <th>Worst Weather</th></tr>
 	  </thead>
 	  <tbody>
-	    <tr><th>System Temperature</th>
+	    <tr><th>System Temperature (<span class="showHelp" name="systemTemperature">?</span>)</th>
 	      <td id="results-array-systemtemperature-bestweather"></td>
 	      <td id="results-array-systemtemperature-typicalweather"></td>
 	      <td id="results-array-systemtemperature-worstweather"></td>
 	    </tr>
-	    <tr><th>Antenna Sensitivity</th>
+	    <tr><th>Antenna Sensitivity (<span class="showHelp" name="antennaSEFD">?</span>)</th>
 	      <td id="results-array-antennasensitivity-bestweather"></td>
 	      <td id="results-array-antennasensitivity-typicalweather"></td>
 	      <td id="results-array-antennasensitivity-worstweather"></td>
@@ -1043,6 +1233,32 @@
 	      <td id="results-array-arraysensitivity-bestweather"></td>
 	      <td id="results-array-arraysensitivity-typicalweather"></td>
 	      <td id="results-array-arraysensitivity-worstweather"></td>
+	    </tr>
+	  </tbody>
+	</table>
+	<table class="results-parameter-table">
+	  <caption>Weather Conditions Summary (<span class="showHelp lightBackground" name="weatherConditions">help?</span>)</caption>
+	  <thead>
+	    <tr><td id="results-array-weatherconditions-timerange"></td>
+	      <th>Best Weather</th>
+	      <th>Typical Weather</th>
+	      <th>Worst Weather</th></tr>
+	  </thead>
+	  <tbody>
+	    <tr><th>Temperature</th>
+	      <td id="results-array-weatherconditions-temperature-bestweather"></td>
+	      <td id="results-array-weatherconditions-temperature-typicalweather"></td>
+	      <td id="results-array-weatherconditions-temperature-worstweather"></td>
+	    </tr>
+	    <tr><th>Pressure</th>
+	      <td id="results-array-weatherconditions-pressure-bestweather"></td>
+	      <td id="results-array-weatherconditions-pressure-typicalweather"></td>
+	      <td id="results-array-weatherconditions-pressure-worstweather"></td>
+	    </tr>
+	    <tr><th>Humidity</th>
+	      <td id="results-array-weatherconditions-humidity-bestweather"></td>
+	      <td id="results-array-weatherconditions-humidity-typicalweather"></td>
+	      <td id="results-array-weatherconditions-humidity-worstweather"></td>
 	    </tr>
 	  </tbody>
 	</table>
@@ -1069,13 +1285,13 @@
 	<h2>Continuum Information</h2>
 	<table class="results-parameter-table">
 	  <caption>Continuum Image Parameters</caption>
-	  <tr><th>Weighting:</th>
+	  <tr><th>Weighting (<span class="showHelp" name="weighting">?</span>):</th>
 	    <td id="results-continuum-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-continuum-weightingfactor"></span> x Natural</td></tr>
-	  <tr><th>Primary Beam FWHM:</th>
+	  <tr><th>Primary Beam FWHM (<span class="showHelp" name="primaryBeam">?</span>):</th>
 	    <td id="results-continuum-primarybeam"></td></tr>
-	  <tr><th>Synthesised Beam FWHM:</th>
+	  <tr><th>Synthesised Beam FWHM (<span class="showHelp" name="synthesisedBeam">?</span>):</th>
 	    <td id="results-continuum-synthesisedbeam"></td></tr>
 	  <tr><th>Central Frequency:</th>
 	    <td id="results-continuum-centralfrequency"></td></tr>
@@ -1090,15 +1306,41 @@
 	      <th>Worst Weather</th></tr>
 	  </thead>
 	  <tbody>
-	    <tr><th>RMS noise level</th>
+	    <tr><th>RMS noise level (<span class="showHelp" name="rmsNoise">?</span>)</th>
 	      <td id="results-continuum-rmsnoiselevel-bestweather"></td>
 	      <td id="results-continuum-rmsnoiselevel-typicalweather"></td>
 	      <td id="results-continuum-rmsnoiselevel-worstweather"></td>
 	    </tr>
-	    <tr><th>Brightness Temperature</th>
+	    <tr><th>Brightness Sensitivity (<span class="showHelp" name="brightnessTemperature">?</span>)</th>
 	      <td id="results-continuum-brightnesstemperature-bestweather"></td>
 	      <td id="results-continuum-brightnesstemperature-typicalweather"></td>
 	      <td id="results-continuum-brightnesstemperature-worstweather"></td>
+	    </tr>
+	  </tbody>
+	</table>
+	<table class="results-parameter-table">
+	  <caption>Weather Conditions Summary (<span class="showHelp lightBackground" name="weatherConditions">help?</span>)</caption>
+	  <thead>
+	    <tr><td id="results-continuum-weatherconditions-timerange"></td>
+	      <th>Best Weather</th>
+	      <th>Typical Weather</th>
+	      <th>Worst Weather</th></tr>
+	  </thead>
+	  <tbody>
+	    <tr><th>Temperature</th>
+	      <td id="results-continuum-weatherconditions-temperature-bestweather"></td>
+	      <td id="results-continuum-weatherconditions-temperature-typicalweather"></td>
+	      <td id="results-continuum-weatherconditions-temperature-worstweather"></td>
+	    </tr>
+	    <tr><th>Pressure</th>
+	      <td id="results-continuum-weatherconditions-pressure-bestweather"></td>
+	      <td id="results-continuum-weatherconditions-pressure-typicalweather"></td>
+	      <td id="results-continuum-weatherconditions-pressure-worstweather"></td>
+	    </tr>
+	    <tr><th>Humidity</th>
+	      <td id="results-continuum-weatherconditions-humidity-bestweather"></td>
+	      <td id="results-continuum-weatherconditions-humidity-typicalweather"></td>
+	      <td id="results-continuum-weatherconditions-humidity-worstweather"></td>
 	    </tr>
 	  </tbody>
 	</table>
@@ -1125,13 +1367,13 @@
 	<h2>Spectral Information</h2>
 	<table class="results-parameter-table">
 	  <caption>Spectral Cube Parameters</caption>
-	  <tr><th>Weighting:</th>
+	  <tr><th>Weighting (<span class="showHelp" name="weighting">?</span>):</th>
 	    <td id="results-spectral-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-spectral-weightingfactor"></span> x Natural</td></tr>
-	  <tr><th>Primary Beam FWHM:</th>
+	  <tr><th>Primary Beam FWHM (<span class="showHelp" name="primaryBeam">?</span>):</th>
 	    <td id="results-spectral-primarybeam"></td></tr>
-	  <tr><th>Synthesised Beam FWHM:</th>
+	  <tr><th>Synthesised Beam FWHM (<span class="showHelp" name="synthesisedBeam">?</span>):</th>
 	    <td id="results-spectral-synthesisedbeam"></td></tr>
 	  <tr><th>Central Frequency:</th>
 	    <td id="results-spectral-centralfrequency"></td></tr>
@@ -1139,7 +1381,7 @@
 	    <td id="results-spectral-effectivebandwidth"></td></tr>
 	  <tr><th>Frequency Resolution:</th>
 	    <td id="results-spectral-frequencyresolution"></td></tr>
-	  <tr><th>Velocity Width:</th>
+	  <tr><th>Velocity Width (<span class="showHelp" name="velocityWidths">?</span>):</th>
 	    <td id="results-spectral-velocitywidth"></td></tr>
 	  <tr><th>Velocity Resolution:</th>
 	    <td id="results-spectral-velocityresolution"></td></tr>
@@ -1154,12 +1396,12 @@
 	      <th>Worst Weather</th></tr>
 	  </thead>
 	  <tbody>
-	    <tr><th>RMS noise level</th>
+	    <tr><th>RMS noise level (<span class="showHelp" name="rmsNoise">?</span>)</th>
 	      <td id="results-spectral-rmsnoiselevel-bestweather"></td>
 	      <td id="results-spectral-rmsnoiselevel-typicalweather"></td>
 	      <td id="results-spectral-rmsnoiselevel-worstweather"></td>
 	    </tr>
-	    <tr><th>Brightness Temperature</th>
+	    <tr><th>Brightness Sensitivity (<span class="showHelp" name="brightnessTemperature">?</span>)</th>
 	      <td id="results-spectral-brightnesstemperature-bestweather"></td>
 	      <td id="results-spectral-brightnesstemperature-typicalweather"></td>
 	      <td id="results-spectral-brightnesstemperature-worstweather"></td>
@@ -1173,6 +1415,32 @@
 	    normally be flagged during the reduction process.</figcaption>
 	  <img id="results-spectral-rms-image" src="" />
 	</figure>
+	<table class="results-parameter-table">
+	  <caption>Weather Conditions Summary (<span class="showHelp lightBackground" name="weatherConditions">help?</span>)</caption>
+	  <thead>
+	    <tr><td id="results-spectral-weatherconditions-timerange"></td>
+	      <th>Best Weather</th>
+	      <th>Typical Weather</th>
+	      <th>Worst Weather</th></tr>
+	  </thead>
+	  <tbody>
+	    <tr><th>Temperature</th>
+	      <td id="results-spectral-weatherconditions-temperature-bestweather"></td>
+	      <td id="results-spectral-weatherconditions-temperature-typicalweather"></td>
+	      <td id="results-spectral-weatherconditions-temperature-worstweather"></td>
+	    </tr>
+	    <tr><th>Pressure</th>
+	      <td id="results-spectral-weatherconditions-pressure-bestweather"></td>
+	      <td id="results-spectral-weatherconditions-pressure-typicalweather"></td>
+	      <td id="results-spectral-weatherconditions-pressure-worstweather"></td>
+	    </tr>
+	    <tr><th>Humidity</th>
+	      <td id="results-spectral-weatherconditions-humidity-bestweather"></td>
+	      <td id="results-spectral-weatherconditions-humidity-typicalweather"></td>
+	      <td id="results-spectral-weatherconditions-humidity-worstweather"></td>
+	    </tr>
+	  </tbody>
+	</table>
 	<div class="navigation-permanent">
 	  <div class="navigation-previous">
 	    <div class="results-interview-restart">
@@ -1196,13 +1464,13 @@
 	<h2>Zoom Information</h2>
 	<table class="results-parameter-table">
 	  <caption>Zoom Band Cube Parameters</caption>
-	  <tr><th>Weighting:</th>
+	  <tr><th>Weighting (<span class="showHelp" name="weighting">?</span>):</th>
 	    <td id="results-zoom-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-zoom-weightingfactor"></span> x Natural</td></tr>
-	  <tr><th>Primary Beam FWHM:</th>
+	  <tr><th>Primary Beam FWHM (<span class="showHelp" name="primaryBeam">?</span>):</th>
 	    <td id="results-zoom-primarybeam"></td></tr>
-	  <tr><th>Synthesised Beam FWHM:</th>
+	  <tr><th>Synthesised Beam FWHM (<span class="showHelp" name="synthesisedBeam">?</span>):</th>
 	    <td id="results-zoom-synthesisedbeam"></td></tr>
 	  <tr><th>Central Frequency:</th>
 	    <td id="results-zoom-centralfrequency"></td></tr>
@@ -1212,7 +1480,7 @@
 	    <td id="results-zoom-frequencyresolution"></td></tr>
 	  <tr><th>Cube planes:</th>
 	    <td id="results-zoom-cubeplanes"></td></tr>
-	  <tr><th>Velocity Width:</th>
+	  <tr><th>Velocity Width (<span class="showHelp" name="velocityWidths">?</span>):</th>
 	    <td id="results-zoom-velocitywidth"></td></tr>
 	  <tr><th>Velocity Resolution:</th>
 	    <td id="results-zoom-velocityresolution"></td></tr>
@@ -1227,15 +1495,41 @@
 	      <th>Worst Weather</th></tr>
 	  </thead>
 	  <tbody>
-	    <tr><th>RMS noise level</th>
+	    <tr><th>RMS noise level (<span class="showHelp" name="rmsNoise">?</span>)</th>
 	      <td id="results-zoom-rmsnoiselevel-bestweather"></td>
 	      <td id="results-zoom-rmsnoiselevel-typicalweather"></td>
 	      <td id="results-zoom-rmsnoiselevel-worstweather"></td>
 	    </tr>
-	    <tr><th>Brightness Temperature</th>
+	    <tr><th>Brightness Sensitivity (<span class="showHelp" name="brightnessTemperature">?</span>)</th>
 	      <td id="results-zoom-brightnesstemperature-bestweather"></td>
 	      <td id="results-zoom-brightnesstemperature-typicalweather"></td>
 	      <td id="results-zoom-brightnesstemperature-worstweather"></td>
+	    </tr>
+	  </tbody>
+	</table>
+	<table class="results-parameter-table">
+	  <caption>Weather Conditions Summary (<span class="showHelp lightBackground" name="weatherConditions">help?</span>)</caption>
+	  <thead>
+	    <tr><td id="results-zoom-weatherconditions-timerange"></td>
+	      <th>Best Weather</th>
+	      <th>Typical Weather</th>
+	      <th>Worst Weather</th></tr>
+	  </thead>
+	  <tbody>
+	    <tr><th>Temperature</th>
+	      <td id="results-zoom-weatherconditions-temperature-bestweather"></td>
+	      <td id="results-zoom-weatherconditions-temperature-typicalweather"></td>
+	      <td id="results-zoom-weatherconditions-temperature-worstweather"></td>
+	    </tr>
+	    <tr><th>Pressure</th>
+	      <td id="results-zoom-weatherconditions-pressure-bestweather"></td>
+	      <td id="results-zoom-weatherconditions-pressure-typicalweather"></td>
+	      <td id="results-zoom-weatherconditions-pressure-worstweather"></td>
+	    </tr>
+	    <tr><th>Humidity</th>
+	      <td id="results-zoom-weatherconditions-humidity-bestweather"></td>
+	      <td id="results-zoom-weatherconditions-humidity-typicalweather"></td>
+	      <td id="results-zoom-weatherconditions-humidity-worstweather"></td>
 	    </tr>
 	  </tbody>
 	</table>
@@ -1264,6 +1558,30 @@
     <div class="pagefooter">
       <!--#include virtual="/includefiles/ca_footer.html" -->
     </div>
+
+    <!-- The computing wait modal box. -->
+    <div class="md-modal md-effect-1" id="modal-loading">
+      <div class="md-content md-content-loading">
+	<h3>Computing - please wait...</h3>
+	<div>
+	  <p>The calculator requires a little time to compute your
+	    sensitivities, please wait...</p>
+	  <p id="loading-long" class="md-hidden-message">
+	    It seems like this is taking a while, please wait a little
+	    longer...
+	  </p>
+	  <p id="loading-too-long" class="md-hidden-message">
+	    This may not have worked, you might try submitting again.
+	    Sorry!
+	  </p>
+	  <button class="md-close md-hidden-message" id="loading-too-long-close">
+	    Gotcha!</button>
+	  <div class="meter" id="modalMeter">
+	    <span id="modalProgress" class="modalProgress"></span>
+	  </div>
+	</div>
+      </div>
+    </div> <!-- #modal-loading -->
 
     <!-- The following code is for some modal windows for error alerts. -->
     <div class="md-modal md-effect-1" id="modal-error-zoomfreq">
@@ -1339,6 +1657,16 @@
 	</div>
       </div>
     </div> <!-- #modal-rms-image -->
+
+    <div class="md-modal md-effect-1" id="modal-calculator-error">
+      <div class="md-content">
+	<h3>Calculation error</h3>
+	<div>
+	  <p id="model-calculator-error-content"></p>
+	  <button class="md-close">Gotcha!</button>
+	</div>
+      </div>
+    </div> <!-- #modal-calculator-error -->
 
   </body>
 </html>

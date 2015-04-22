@@ -1,21 +1,25 @@
 require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Memory',
 	   'dijit/form/ComboBox', 'dojo/dom-class', 'dojo/_base/fx', 'dojo/dom-style',
 	   'dojo/fx', 'dojo/dom-construct', 'dojo/request/xhr', 'atnf/base',
-	   'dojo/dom-geometry',
+	   'dojo/dom-geometry', "dojo/_base/lang", "dojox/timing",
 	   'dojo/NodeList-manipulate', 'dojo/NodeList-dom', 'dojo/domReady!' ],
 	 function(dom, domAttr, on, query, Memory, ComboBox, domClass, fx, domStyle, 
-		  coreFx, domConstruct, xhr, atnf, domGeom) {
+		  coreFx, domConstruct, xhr, atnf, domGeom, lang, timing) {
 
+	     
 	     var linkedElements = [
 		 // Text input elements.
 		 [ 'data-cabb-centralfreq', 'interactive-continuum-cabb-centralfreq' ],
 		 [ 'data-cabb-zoomfreq', 'interactive-cabb-spectralfreq' ],
 		 [ 'data-declination', 'interactive-declination' ],
 		 [ 'data-elevation-limit', 'interactive-elevation-limit' ],
-		 [ 'data-hourangle-limit', 'interactive-hourangle-limit' ],
+		 [ 'data-hourangle-limit-min', 'interactive-hourangle-limit-min' ],
+		 [ 'data-hourangle-limit-max', 'interactive-hourangle-limit-max' ],
 		 [ 'data-nzooms', 'interactive-nzooms' ],
-		 [ 'data-smoothing', 'interactive-smoothing' ],
-		 [ 'data-remove-edge', 'interactive-remove-edge' ],
+		 [ 'data-smoothing-continuum', 'interactive-smoothing-continuum' ],
+		 [ 'data-smoothing-zoom', 'interactive-smoothing-zoom' ],
+		 [ 'data-remove-edge-continuum', 'interactive-remove-edge-continuum' ],
+		 [ 'data-remove-edge-zoom', 'interactive-remove-edge-zoom' ],
 		 [ 'data-integration', 'interactive-integration' ],
 		 [ 'data-sensitivity', 'interactive-sensitivity' ],
 		 // Radio buttons.
@@ -27,6 +31,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'data-sensitivity-mode', 'interactive-sensitivity-mode' ],
 		 [ 'data-sensitivity-weather', 'interactive-sensitivity-weather' ],
 		 [ 'data-cabb-mode', 'interactive-cabb-mode' ],
+		 [ 'data-season', 'interactive-season' ],
 		 // Checkboxes.
 		 [ 'data-include-ca06', 'interactive-include-ca06' ],
 		 [ 'data-remove-birdies', 'interactive-remove-birdies' ],
@@ -36,7 +41,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 // Text input elements.
 		 '', '', '-30', '12', '6', '1', '1', '0', '720', '1',
 		 // Radio buttons.
-		 '6km', 'N', 'Integration', 'mJy/beam', 'continuum', 'best', 'CFB1M',
+		 '6km', 'N', 'Integration', 'mJy/beam', 'continuum', 'best', 'CFB1M', 'ANNUAL',
 		 // Checkboxes.
 		 true, true, true
 	     ];
@@ -72,8 +77,62 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 }
 	     };
 
+	     var isEmpty = function(o) {
+		 for (var p in o) {
+		     if (o.hasOwnProperty(p)) {
+			 return false;
+		     }
+		 }
+		 return true;
+	     };
+
+	     var appendStrings = function(a, b) {
+		 ra = []
+		 if (a.length == 0) {
+		     if (b instanceof Array) {
+			 for (var j = 0; j < b.length; j++) {
+			     ra.push(b[j]);
+			 }
+		     } else {
+			 ra.push(b);
+		     }
+		 } else {
+		     for (var i = 0; i < a.length; i++) {
+			 if (b instanceof Array) {
+			     for (var j = 0; j < b.length; j++) {
+				 ra.push(a[i] + '.' + b[j])
+			     }
+			 } else {
+			     ra.push(a[i] + '.' + b)
+			 }
+		     }
+		 }
+
+		 return ra;
+	     };
+
 	     query('.md-close').on('click', function(e) {
 		 query('.md-modal').removeClass('md-show');
+		 // Check for some particular cases.
+		 if (e.target.id === 'loading-too-long-close') {
+		     query('#loading-too-long-close').addClass('md-hidden-message');
+		     query('#loading-too-long').addClass('md-hidden-message');
+		 }
+	     });
+
+	     var popupHelp = function(divShow) {
+		 if (!window.focus) {
+		     return true;
+		 }
+		 var href = "interactive_senscalc_help.html#" + divShow;
+		 window.open(href, "calchelp", 'width=800, height=600, scrollbars=yes');
+		 return false;
+	     };
+
+	     // Make all the help icons popup the help page window.
+	     query('.showHelp').on('click', function(e) {
+		 var n = domAttr.get(e.target, 'name');
+		 popupHelp(n);
 	     });
 
 	     var errorChecks = function(cId) {
@@ -160,13 +219,35 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     var myVal = query('[name="' + myName +'"]:checked').val();
 		     if (myVal === 'Integration') {
 			 panelOrder['panel-calculation-mode']['next'] =
-			     panelOrder['panel-calculate-button']['previous'] =
+			     panelOrder['panel-season']['previous'] =
 			     'panel-integration-time';
 		     } else if (myVal === 'Sensitivity') {
 			 panelOrder['panel-calculation-mode']['next'] =
-			     panelOrder['panel-calculate-button']['previous'] =
+			     panelOrder['panel-season']['previous'] =
 			     'panel-sensitivity-required';
 		     }
+		 }
+		 if (myId === 'interactive-sensitivity-weather-best' ||
+		     myId === 'interactive-sensitivity-weather-typical' ||
+		     myId === 'interactive-sensitivity-weather-worst' ||
+		     myId === 'data-sensitivity-weather-best' ||
+		     myId === 'data-sensitivity-weather-typical' ||
+		     myId === 'data-sensitivity-weather-worst') {
+		     // Set which value should be shown in the return panels.
+		     var showVal = 0;
+		     if (/best$/.test(myId)) {
+			 showVal = 0;
+		     } else if (/typical$/.test(myId)) {
+			 showVal = 1;
+		     } else if (/worst$/.test(myId)) {
+			 showVal = 2;
+		     }
+		     resultsIds['results-summary-continuum-sensitivity-surfacebrightness'][3] = showVal;
+		     resultsIds['results-summary-continuum-sensitivity-sensitivity'][3] = showVal;
+		     resultsIds['results-summary-spectral-sensitivity-surfacebrightness'][3] = showVal;
+		     resultsIds['results-summary-spectral-sensitivity-sensitivity'][3] = showVal;
+		     resultsIds['results-summary-zoom-sensitivity-surfacebrightness'][3] = showVal;
+		     resultsIds['results-summary-zoom-sensitivity-sensitivity'][3] = showVal;
 		 }
 		 if (myId === 'data-cabb-zoomfreq' ||
 		     myId === 'interactive-cabb-spectralfreq') {
@@ -346,13 +427,16 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     'next': 'panel-integration-time', 
 		     'previous': 'panel-flagging'
 		 }, 'panel-integration-time': {
-		     'next': 'panel-calculate-button', 
+		     'next': 'panel-season', 
 		     'previous': 'panel-calculation-mode'
 		 }, 'panel-sensitivity-required': {
-		     'next': 'panel-calculate-button', 
+		     'next': 'panel-season', 
 		     'previous': 'panel-calculation-mode'
+		 }, 'panel-season': {
+		     'next': 'panel-calculate-button',
+		     'previous': 'panel-integration-time'
 		 }, 'panel-calculate-button': {
-		     'next': '', 'previous': 'panel-integration-time'
+		     'next': '', 'previous': 'panel-season'
 		 }
 	     };
 
@@ -500,18 +584,18 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'source_imaging', 'weighting_scheme' ],
 		 'results-summary-continuum-integration-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   'continuum', 0 ],
+		   'continuum', 1 ],
 		 'results-summary-continuum-integration-sensitivity':
-		 [ 'sensitivities', 'rms_noise_level', 'continuum', 0 ],
+		 [ 'sensitivities', 'rms_noise_level', 'continuum', 1 ],
 		 'results-summary-continuum-sensitivity-centralfreq':
 		 [ 'parameters', 'central_frequency' ],
 		 'results-summary-continuum-sensitivity-weighting':
 		 [ 'source_imaging', 'weighting_scheme' ],
 		 'results-summary-continuum-sensitivity-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   'continuum', 0 ],
+		   'continuum', 1 ],
 		 'results-summary-continuum-sensitivity-sensitivity':
-		 [ 'sensitivities', 'rms_noise_level', 'continuum', 0 ],
+		 [ 'sensitivities', 'rms_noise_level', 'continuum', 1 ],
 		 'results-summary-continuum-sensitivity-time':
 		 [ 'source_imaging', 'integration_time' ],
 
@@ -526,9 +610,9 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'continuum', 'spectral_channel_resolution'],
 		 'results-summary-spectral-integration-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   'spectral', 0 ],
+		   'spectral', 1 ],
 		 'results-summary-spectral-integration-sensitivity':
-		 [ 'sensitivities', 'rms_noise_level', 'spectral', 0 ],
+		 [ 'sensitivities', 'rms_noise_level', 'spectral', 1 ],
 		 'results-summary-spectral-sensitivity-centralfreq':
 		 [ 'parameters', 'central_frequency' ],
 		 'results-summary-spectral-sensitivity-weighting':
@@ -557,10 +641,10 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ [ 'specific_zoom', 'zoom' ], 'spectral_channel_resolution'],
 		 'results-summary-zoom-integration-surfacebrightness':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   [ 'specific_zoom', 'zoom' ], 0 ],
+		   [ 'specific_zoom', 'zoom' ], 1 ],
 		 'results-summary-zoom-integration-sensitivity':
 		 [ 'sensitivities', 'rms_noise_level', 
-		   [ 'specific_zoom', 'zoom' ], 0 ],
+		   [ 'specific_zoom', 'zoom' ], 1 ],
 		 'results-summary-zoom-sensitivity-nzooms':
 		 [ [ 'specific_zoom', 'zoom' ], 'n_zooms' ],
 		 'results-summary-zoom-sensitivity-centralfreq':
@@ -584,7 +668,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-array-nbaselines':
 		 [ 'parameters', 'n_baselines' ],
 		 'results-array-longestbaseline':
-		 [ 'parameters', 'configuration' ],
+		 [ 'source_imaging', 'maximum_baseline_length' ],
 		 'results-array-efficiency':
 		 [ 'parameters', 'antenna_efficiency' ],
 		 'results-array-systemtemperature-bestweather':
@@ -605,6 +689,26 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 [ 'sensitivities', 'array_sensitivity', 1 ],
 		 'results-array-arraysensitivity-worstweather':
 		 [ 'sensitivities', 'array_sensitivity', 2 ],
+		 'results-array-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-array-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-array-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-array-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-array-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-array-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-array-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-array-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-array-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-array-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ],
 
 		 // Continuum Information panel.
 		 'results-continuum-weighting':
@@ -634,6 +738,26 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-continuum-brightnesstemperature-worstweather':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
 		   'continuum', 2 ],
+		 'results-continuum-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-continuum-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-continuum-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-continuum-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-continuum-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-continuum-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-continuum-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-continuum-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-continuum-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-continuum-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ],
 
 		 // Spectral Information panel.
 		 'results-spectral-weighting':
@@ -671,6 +795,26 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-spectral-brightnesstemperature-worstweather':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
 		   'spectral', 2 ],
+		 'results-spectral-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-spectral-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-spectral-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-spectral-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-spectral-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-spectral-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-spectral-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-spectral-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-spectral-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-spectral-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ],
 
 		 // Zoom Information panel.
 		 'results-zoom-weighting':
@@ -685,13 +829,13 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 'results-zoom-centralfrequency':
 		 [ 'parameters', [ 'zoom_frequency', 'central_frequency' ] ],
 		 'results-zoom-effectivebandwidth':
-		 [ [ 'specific_zoom', 'zoom' ], 'zoom_total_bandwidth' ],
+		 [ [ 'specific_zoom', 'zoom' ], 'effective_bandwidth' ],
 		 'results-zoom-frequencyresolution':
-		 [ [ 'specific_zoom', 'zoom' ], 'zoom_channel_bandwidth' ],
+		 [ [ 'specific_zoom', 'zoom' ], 'channel_bandwidth' ],
 		 'results-zoom-cubeplanes':
 		 [ [ 'specific_zoom', 'zoom' ], 'n_channels' ],
 		 'results-zoom-velocitywidth':
-		 [ [ 'specific_zoom', 'zoom' ], 'zoom_total_spectral_bandwidth' ],
+		 [ [ 'specific_zoom', 'zoom' ], 'spectral_bandwidth' ],
 		 'results-zoom-velocityresolution':
 		 [ [ 'specific_zoom', 'zoom' ], 'spectral_channel_resolution' ],
 		 'results-zoom-restfrequency':
@@ -713,28 +857,63 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		   [ 'specific_zoom', 'zoom' ], 1 ],
 		 'results-zoom-brightnesstemperature-worstweather':
 		 [ 'sensitivities', 'brightness_temperature_sensitivity',
-		   [ 'specific_zoom', 'zoom' ], 2 ]
-
+		   [ 'specific_zoom', 'zoom' ], 2 ],
+		 'results-zoom-weatherconditions-timerange':
+		 [ 'parameters', 'atmospheric_season' ],
+		 'results-zoom-weatherconditions-temperature-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'temperature' ],
+		 'results-zoom-weatherconditions-temperature-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'temperature' ],
+		 'results-zoom-weatherconditions-temperature-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'temperature' ],
+		 'results-zoom-weatherconditions-pressure-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'pressure' ],
+		 'results-zoom-weatherconditions-pressure-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'pressure' ],
+		 'results-zoom-weatherconditions-pressure-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'pressure' ],
+		 'results-zoom-weatherconditions-humidity-bestweather':
+		 [ 'parameters', 'atmospheric_conditions', 'best', 'humidity' ],
+		 'results-zoom-weatherconditions-humidity-typicalweather':
+		 [ 'parameters', 'atmospheric_conditions', 'typical', 'humidity' ],
+		 'results-zoom-weatherconditions-humidity-worstweather':
+		 [ 'parameters', 'atmospheric_conditions', 'worst', 'humidity' ]
 	     };
 	     var gotResults = function(data) {
-		 console.log(data);
+		 // Close the loading dialog.
+		 query('#modal-loading').removeClass('md-show');
+		 // Hide any messages that have popped up.
+		 query('#loading-long').addClass('md-hidden-message');
+		 query('#modalMeter').addClass('md-hidden-message');
+		 query('#loading-too-long').addClass('md-hidden-message');
+		 query('#loading-too-long-close').addClass('md-hidden-message');
+		 // Stop the timers.
+		 loadTimer1.stop();
+		 loadTimer2.stop();
+		 
+		 //console.log(data);
+		 // Check for an error coming from the calculator.
+		 if ("error" in data) {
+		     domAttr.set("model-calculator-error-content", "innerHTML",
+				 data.error);
+		     showAlert("modal-calculator-error");
+		     return;
+		 }
+
 		 // Populate the results pages.
 		 for (var rId in resultsIds) {
 		     if (resultsIds.hasOwnProperty(rId)) {
 			 var t = data;
 			 var tu = '';
+			 var corder = []
+			 var cindex = -1;
 			 for (var i = 0; i < resultsIds[rId].length; i++) {
-			     if (resultsIds[rId][i] instanceof Array) {
-				 for (var j = 0; j < resultsIds[rId][i].length; j++) {
-				     if (typeof t[resultsIds[rId][i][j]] !== 'undefined' &&
-					 t[resultsIds[rId][i][j]] !== 0) {
-					 t = t[resultsIds[rId][i][j]];
-					 break;
-				     }
-				 }
+			     if (!atnf.isNumeric(resultsIds[rId][i])) {
+				 corder = appendStrings(corder, resultsIds[rId][i]);
 			     } else {
-				 t = t[resultsIds[rId][i]];
+				 cindex = resultsIds[rId][i];
 			     }
+			     
 			     if (!atnf.isNumeric(resultsIds[rId][i])) {
 				 if (resultsIds[rId][i] instanceof Array) {
 				     for (var j = 0; j < resultsIds[rId][i].length; j++) {
@@ -750,12 +929,33 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 				 }
 			     }
 			 }
+			 for (var i = 0; i < corder.length; i++) {
+			     if (lang.exists(corder[i], data)) {
+				 t = lang.getObject(corder[i], false, data);
+				 if (cindex > -1) {
+				     t = t[cindex];
+				 }
+				 break;
+			     } else {
+				 t = null;
+			     }
+			 }
+
 			 // console.log(rId + ' = ' + t);
+
+			 // Check for robust return values.
+			 if (/^R.{1,2}$/.test(t)) {
+			     t = t.replace("R", "Robust=")
+			 }
 			 
 			 if (t instanceof Array) {
 			     t = t.join(' x ');
 			 }
-			 domAttr.set(rId, 'innerHTML', t + ' ' + tu);
+			 if (domClass.contains(rId, "nounits")) {
+			     domAttr.set(rId, 'innerHTML', t);
+			 } else {
+			     domAttr.set(rId, 'innerHTML', t + ' ' + tu);
+			 }
 			 domClass.add(rId, 'filled-result');
 		     }
 		 }
@@ -818,8 +1018,58 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 });
 	     };
 
+
+	     // The time that we expect the calculation to take, in seconds.
+	     var expectedTime = 10;
+	     var bufferTime = 2;
+
+	     // Make a couple of timing elements that will tick when the loading process
+	     // takes too long.
+	     var loadTimer1 = new timing.Timer();
+	     // The "taking a while" tick is a bit after the expected time.
+	     loadTimer1.setInterval((expectedTime + bufferTime) * 1000); 
+	     loadTimer1.onTick = function() {
+		 // Stop the timer.
+		 loadTimer1.stop();
+		 // We show the second message in the loading dialog.
+		 query('#loading-long').removeClass('md-hidden-message');
+	     };
+
+	     var loadTimer2 = new timing.Timer();
+	     // The "probably failed" tick is after four times the expected time.
+	     loadTimer2.setInterval(expectedTime * 4 * 1000);
+	     loadTimer2.onTick = function() {
+		 // Stop the timer.
+		 loadTimer2.stop();
+		 // We hide the second message in the loading dialog, and then
+		 // show the third message and the close button.
+		 query('#loading-long').addClass('md-hidden-message');
+		 query('#modalMeter').addClass('md-hidden-message');
+		 query('#loading-too-long').removeClass('md-hidden-message');
+		 query('#loading-too-long-close').removeClass('md-hidden-message');
+	     };
+
+	     // The progress bar goes for the expected time.
+	     var loadProgress = fx.animateProperty({
+		 'node': dom.byId("modalProgress"),
+		 'properties': {
+		     'width': { 'start': 0, 'end': 100, 'units': '%' }
+		 },
+		 'duration': (expectedTime * 1000)
+	     });
+
 	     // Do some checks and then do the calculation.
 	     var beginCalculation = function() {
+		 // Begin by showing the loading dialog.
+		 showAlert('modal-loading');
+		 // And show the loading bubbles as well.
+		 query('#modalMeter').removeClass('md-hidden-message');
+
+		 // Start the timers for load conditions.
+		 loadTimer1.start();
+		 loadTimer2.start();
+		 loadProgress.play({ 'gotoStart': true });
+
 		 var pack = {};
 		 pack['configuration'] = query('[name="data-array"]:checked').val();
 		 pack['frequency'] = domAttr.get('data-cabb-centralfreq', 'value');
@@ -830,12 +1080,14 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		 }
 		 if (!errorChecks('data-declination') ||
 		     !errorChecks('data-elevation-limit') ||
-		     !errorChecks('data-hourangle-limit')) {
+		     !errorChecks('data-hourangle-limit-min') ||
+		     !errorChecks('data-hourangle-limit-max')) {
 		     return;
 		 }
 		 pack['dec'] = domAttr.get('data-declination', 'value');
 		 pack['ellimit'] = domAttr.get('data-elevation-limit', 'value');
-		 pack['halimit'] = domAttr.get('data-hourangle-limit', 'value');
+		 pack['ha_min'] = domAttr.get('data-hourangle-limit-min', 'value');
+		 pack['ha_max'] = domAttr.get('data-hourangle-limit-max', 'value');
 		 pack['corrconfig'] = query('[name="data-cabb-mode"]:checked').val();
 		 pack['weighting'] = query('[name="data-image-weight"]:checked').val();
 		 var tmpVal = domAttr.get('data-cabb-zoomfreq', 'value');
@@ -851,6 +1103,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     pack['integration'] = domAttr.get('data-integration', 'value');
 		 } else if (opMode === 'Sensitivity') {
 		     pack['target'] = domAttr.get('data-sensitivity', 'value');
+		     pack['calculate_time'] = true;
 		     
 		     targetBand = query('[name="data-sensitivity-mode"]:checked').val();
 		     if (targetBand === 'zoom' && pack['zoomfreq']) {
@@ -863,7 +1116,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			 pack['target_continuum'] = true;
 		     }
 		     
-		     targetWeather = query('[name="data-sensitivity-weather"]:checked').val();
+		     var targetWeather = query('[name="data-sensitivity-weather"]:checked').val();
 		     pack['target_' + targetWeather] = true
 
 		     tmpVal = query('[name="data-sensitivity-units"]:checked').val();
@@ -873,8 +1126,11 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 			 pack['target_flux_density'] = true
 		     }
 		 }
-		 pack['ca06'] = (dom.byId('data-include-ca06').checked);
-		 pack['smoothing'] = domAttr.get('data-smoothing', 'value');
+		 if (dom.byId('data-include-ca06').checked) {
+		     pack['ca06'] = true;
+		 }
+		 pack['smoothing'] = domAttr.get('data-smoothing-continuum', 'value');
+		 pack['zoom_smoothing'] = domAttr.get('data-smoothing-zoom', 'value');
 		 pack['zoom_width'] = domAttr.get('data-nzooms', 'value');
 		 tmpVal = domAttr.get('data-rest-frequency', 'value');
 		 if (tmpVal !== '') {
@@ -884,12 +1140,22 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     }
 		     pack['restfreq'] = tmpVal;
 		 }
-		 pack['birdies'] = (dom.byId('data-remove-birdies').checked);
-		 pack['rfi'] = (dom.byId('data-remove-rfi').checked);
-		 tmpVal = domAttr.get('data-remove-edge', 'value');
+		 if (dom.byId('data-remove-birdies').checked) {
+		     pack['birdies'] = true;
+		 }
+		 if (dom.byId('data-remove-rfi').checked) {
+		     pack['rfi'] = true;
+		 }
+		 tmpVal = domAttr.get('data-remove-edge-continuum', 'value');
 		 if (tmpVal > 0) {
 		     pack['edge'] = tmpVal;
 		 }
+		 tmpVal = domAttr.get('data-remove-edge-zoom', 'value');
+		 if (tmpVal > 0) {
+		     pack['zoom_edge'] = tmpVal;
+		 }
+		 var targetSeason = query('[name="data-season"]:checked').val();
+		 pack['season'] = targetSeason;
 		 serverComms(pack).then(gotResults);
 	     };
 	     on(dom.byId('data-calculate'), 'click', beginCalculation);
