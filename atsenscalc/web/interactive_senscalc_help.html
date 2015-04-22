@@ -46,12 +46,12 @@
     <div class="helpSection invisible" id="rmsNoise">
       <h2>Help: RMS noise level</h2>
       The RMS noise level computed by the sensitivity calculator is:
-      <div>$\sigma_{\rm rms} = \frac{\sqrt{2} k {\rm T}_{\rm meas} W}{10^{-26} A_{\rm ant} \epsilon \sqrt{N_{\rm ant}(N_{\rm ant} - 1) \Delta\nu \tau}}$,</div>
+      <div>$S_{\rm rms} = \frac{\sqrt{2} k {\rm T}_{\rm S} W}{10^{-26} A_{\rm ant} \epsilon \sqrt{N_{\rm ant}(N_{\rm ant} - 1) \Delta\nu \tau}}$,</div>
       where<br />
       <ul>
-	<li>$\sigma_{\rm rms}$ is the RMS noise level, in units of mJy/beam,</li>
+	<li>$S_{\rm rms}$ is the RMS noise level, in units of mJy/beam,</li>
 	<li>$k$ is the Boltzmann constant, in units of ${\rm J}.{\rm K}^{-1}$,</li>
-	<li>${\rm T}_{\rm meas}$ is the system temperature, in units of K,</li>
+	<li>${\rm T}_{\rm S}$ is the system temperature, in units of K,</li>
 	<li>$W$ is the image weighting factor (where for Natural weighting $W=1$),</li>
 	<li>$A_{\rm ant}$ is the surface area of a single antenna, in units of ${\rm m}^{2}$,</li>
 	<li>$\epsilon$ is the efficiency of the antenna (where for a perfect antenna $\epsilon=1$),</li>
@@ -60,18 +60,18 @@
 	<li>$\tau$ is the integration time, in units of seconds.</li>
       </ul>
       <br />
-      This gives the sensitivity to an unpolarised point source at the phase
-      centre.
+      This provides the flux density of an unpolarised point source at the phase
+      centre that is equal to the RMS noise level.
     </div>
 
     <div class="helpSection invisible" id="brightnessTemperature">
-      <h2>Help: Brightness Temperature Sensitivity</h2>
-      The brightness temperature sensitivity computed by the calculator is:
+      <h2>Help: Brightness Sensitivity</h2>
+      The brightness sensitivity computed by the calculator is:
       <div>$\sigma_{\rm BT} = \frac{10^{-26}\sigma_{\rm rms}\lambda^{2}}{2k} \frac{(180/\pi)^{2}}{\pi \theta_{\rm min} \theta_{\rm maj}}$,</div>
       where<br />
       <ul>
-	<li>$\sigma_{\rm BT}$ is the brightness temperature sensitivity, in units of K,</li>
-	<li>$\sigma_{\rm rms}$ is the RMS noise level, in units of Jy/beam,</li>
+	<li>$\sigma_{\rm BT}$ is the brightness sensitivity, in units of K,</li>
+	<li>$S_{\rm rms}$ is the RMS noise level, in units of Jy/beam,</li>
 	<li>$\lambda$ is the wavelength, in units of m,</li>
 	<li>$k$ is the Boltzmann constant, in units of ${\rm J}.{\rm K}^{-1}$,</li>
 	<li>$\theta_{\rm min}$ is the semi-minor axis length of the synthesised beam, in units of degrees,</li>
