@@ -125,7 +125,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 		     return true;
 		 }
 		 var href = "interactive_senscalc_help.html#" + divShow;
-		 window.open(href, "calchelp", 'width=600, height=300, scrollbars=yes');
+		 window.open(href, "calchelp", 'width=600, height=600, scrollbars=yes');
 		 return false;
 	     };
 

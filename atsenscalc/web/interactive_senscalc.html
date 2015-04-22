@@ -471,18 +471,6 @@
 	  band with more than one recommended frequency will cycle through
 	  those frequencies.
 	</div><br />
-	<div class="option-equations">
-	  <h3>Relevant Equations</h3>
-	  This parameter is directly involved in the equations for:
-	  <ul>
-	    <li>Primary Beam FWHM = $c / (22\mbox{ m} \times \nu),$<br />where $\nu$ is the
-	      frequency entered here. A higher frequency will result in a smaller
-	      FWHM.</li>
-	    <li>Synthesised Beam semi-minor axis = $(w \times c) / (\nu * B),$<br />
-	      where $\nu$ is the frequency entered here. A higher frequency will result in
-	      a smaller FWHM.</li>
-	  </ul>
-	</div><br />
 	<div class="option-left">
 	  <h3>The recommended frequency for the band</h3>
 	  <div class="button-wrap-div">
@@ -789,24 +777,6 @@
 	  width and resolution of your observations.<br /><br />
 	  You should also specify whether you expect to use the 2 GHz CABB
 	  spectral band to detect the line, or one or more of the CABB zoom bands.
-	</div><br />
-	<div class="option-equations">
-	  <h3>Relevant Equations</h3>
-	  These parameters are directly involved in the equations for:
-	  <ul>
-	    <li>Primary Beam FWHM = $c / (22\mbox{ m} \times \nu),$<br />where $\nu$ is the
-	      line frequency entered here. A higher frequency will result in a smaller
-	      FWHM.</li>
-	    <li>Synthesised Beam semi-minor axis = $(w \times c) / (\nu * B),$<br />
-	      where $\nu$ is the line frequency entered here. A higher frequency will result in
-	      a smaller FWHM.</li>
-	    <li>Velocity coverage = $(\mbox{BW} \times c) / \nu_{\rm rest},$<br />
-	      where $\nu_{\rm rest}$ is the line rest frequency entered here. A higher rest
-	      frequency will result in a smaller velocity coverage.</li>
-	    <li>Velocity resolution = $(\Delta\nu \times s_{\rm chan} \times c) / \nu_{\rm rest},$<br />
-	      where $\nu_{\rm rest}$ is the line rest frequency entered here. A higher rest
-	      frequency will result in an increased velocity resolution.</li>
-	  </ul>
 	</div><br />
 	<table class="interactive-table">
 	  <tr><th>Observed Line frequency:</th>
@@ -1120,7 +1090,8 @@
 	  <p>each plane will have
 	    <ul>
 	      <li>a velocity width of
-		<span id="results-summary-spectral-integration-channelwidth"></span>,</li>
+		<span id="results-summary-spectral-integration-channelwidth"></span>
+		(<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
 	      <li>a brightness sensitivity of
 		<span id="results-summary-spectral-integration-surfacebrightness"></span>
 		(<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
@@ -1142,7 +1113,8 @@
 	  <p>with each plane having a</p>
 	  <ul>
 	    <li>a velocity width of
-	      <span id="results-summary-spectral-sensitivity-channelwidth"></span>,</li>
+	      <span id="results-summary-spectral-sensitivity-channelwidth"></span>
+	      (<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
 	    <li>a brightness sensitivity of
 	      <span id="results-summary-spectral-sensitivity-surfacebrightness"></span>
 	      (<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
@@ -1170,7 +1142,8 @@
 	  <p>each plane will have
 	    <ul>
 	      <li>a velocity width of
-		<span id="results-summary-zoom-integration-channelwidth"></span>,</li>
+		<span id="results-summary-zoom-integration-channelwidth"></span>
+		(<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
 	      <li>a brightness sensitivity of
 		<span id="results-summary-zoom-integration-surfacebrightness"></span>
 		(<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
@@ -1194,7 +1167,8 @@
 	  <p>with each plane having a</p>
 	  <ul>
 	    <li>a velocity width of
-	      <span id="results-summary-zoom-sensitivity-channelwidth"></span>,</li>
+	      <span id="results-summary-zoom-sensitivity-channelwidth"></span>
+	      (<span class="showHelp lightBackground" name="velocityWidths">help?</span>),</li>
 	    <li>a brightness sensitivity of
 	      <span id="results-summary-zoom-sensitivity-surfacebrightness"></span>
 	      (<span class="showHelp lightBackground" name="brightnessTemperature">help?</span>),</li>
@@ -1245,12 +1219,12 @@
 	      <th>Worst Weather</th></tr>
 	  </thead>
 	  <tbody>
-	    <tr><th>System Temperature</th>
+	    <tr><th>System Temperature (<span class="showHelp" name="systemTemperature">?</span>)</th>
 	      <td id="results-array-systemtemperature-bestweather"></td>
 	      <td id="results-array-systemtemperature-typicalweather"></td>
 	      <td id="results-array-systemtemperature-worstweather"></td>
 	    </tr>
-	    <tr><th>Antenna Sensitivity</th>
+	    <tr><th>Antenna Sensitivity (<span class="showHelp" name="antennaSEFD">?</span>)</th>
 	      <td id="results-array-antennasensitivity-bestweather"></td>
 	      <td id="results-array-antennasensitivity-typicalweather"></td>
 	      <td id="results-array-antennasensitivity-worstweather"></td>
@@ -1315,7 +1289,7 @@
 	    <td id="results-continuum-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-continuum-weightingfactor"></span> x Natural</td></tr>
-	  <tr><th>Primary Beam FWHM:</th>
+	  <tr><th>Primary Beam FWHM (<span class="showHelp" name="primaryBeam">?</span>):</th>
 	    <td id="results-continuum-primarybeam"></td></tr>
 	  <tr><th>Synthesised Beam FWHM:</th>
 	    <td id="results-continuum-synthesisedbeam"></td></tr>
@@ -1397,7 +1371,7 @@
 	    <td id="results-spectral-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-spectral-weightingfactor"></span> x Natural</td></tr>
-	  <tr><th>Primary Beam FWHM:</th>
+	  <tr><th>Primary Beam FWHM (<span class="showHelp" name="primaryBeam">?</span>):</th>
 	    <td id="results-spectral-primarybeam"></td></tr>
 	  <tr><th>Synthesised Beam FWHM:</th>
 	    <td id="results-spectral-synthesisedbeam"></td></tr>
@@ -1407,7 +1381,7 @@
 	    <td id="results-spectral-effectivebandwidth"></td></tr>
 	  <tr><th>Frequency Resolution:</th>
 	    <td id="results-spectral-frequencyresolution"></td></tr>
-	  <tr><th>Velocity Width:</th>
+	  <tr><th>Velocity Width (<span class="showHelp" name="velocityWidths">?</span>):</th>
 	    <td id="results-spectral-velocitywidth"></td></tr>
 	  <tr><th>Velocity Resolution:</th>
 	    <td id="results-spectral-velocityresolution"></td></tr>
@@ -1494,7 +1468,7 @@
 	    <td id="results-zoom-weighting"></td></tr>
 	  <tr><th>Weighting Factor:</th>
 	    <td><span id="results-zoom-weightingfactor"></span> x Natural</td></tr>
-	  <tr><th>Primary Beam FWHM:</th>
+	  <tr><th>Primary Beam FWHM (<span class="showHelp" name="primaryBeam">?</span>):</th>
 	    <td id="results-zoom-primarybeam"></td></tr>
 	  <tr><th>Synthesised Beam FWHM:</th>
 	    <td id="results-zoom-synthesisedbeam"></td></tr>
@@ -1506,7 +1480,7 @@
 	    <td id="results-zoom-frequencyresolution"></td></tr>
 	  <tr><th>Cube planes:</th>
 	    <td id="results-zoom-cubeplanes"></td></tr>
-	  <tr><th>Velocity Width:</th>
+	  <tr><th>Velocity Width (<span class="showHelp" name="velocityWidths">?</span>):</th>
 	    <td id="results-zoom-velocitywidth"></td></tr>
 	  <tr><th>Velocity Resolution:</th>
 	    <td id="results-zoom-velocityresolution"></td></tr>
