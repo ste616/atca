@@ -249,13 +249,9 @@ def synthesisedBeamSize(freq, baselineLength, dec, minHa, maxHa, weightFactor):
     # The resolution is simply the inverse of umax or vmax, but we also
     # convert to arcseconds and multiply by the image weighting factor.
     ures = math.degrees(1.0 / umax) * degreesToArcsec * weightFactor
-    # Check for zero vmax, which occurs when observing a source on the
-    # celestial equator withouth NS baselines.
-    try:
-        vres = math.degrees(1.0 / vmax) * degreesToArcsec * weightFactor
-    except ZeroDivisionError:
-        print "FATAL: Cannot observe a declination 0 source with an EW array"
-        sys.exit(-1)
+    # This next line will trigger a ZeroDivisionError if the source is
+    # on the celestial equator and we're in an EW array.
+    vres = math.degrees(1.0 / vmax) * degreesToArcsec * weightFactor
 
     # We now take care of significant figures.
     utmp = "%.2f" % ures
@@ -368,22 +364,17 @@ def linearInterpolate(p1, p2, pi):
 
 def templateInterpolate(t):
     # Interpolate values for channels with no counts.
-    lg = 0
-    for i in xrange(0, len(t['centreFrequency'])):
-        if (t['count'][i] > 0):
-            # The last good channel.
-            lg = i
-        else:
-            # Find the next good channel.
-            for j in xrange(i + 1, len(t['centreFrequency'])):
-                if (t['count'][j] > 0):
-                    hg = j
-                    break
-            t['value'][i] = linearInterpolate({ 'frequency': t['centreFrequency'][lg],
-                                                'value': t['value'][lg] },
-                                              { 'frequency': t['centreFrequency'][hg],
-                                                'value': t['value'][hg] },
-                                              { 'frequency': t['centreFrequency'][i] })
+    # Get the array for where counts is 0 and not.
+    zeroes = np.where(t['count'] == 0)
+    good = np.where(t['count'] > 0)
+    # Get the arrays without zero counts.
+    cf = t['centreFrequency'][good]
+    vs = t['value'][good]
+    # And the values we need to interpolate for.
+    rf = t['centreFrequency'][zeroes]
+    # And then interpolate.
+    iv = np.interp(rf, cf, vs)
+    t['value'][zeroes] = iv
     
 def templateFill(srcTemplate, destTemplate):
     # Fill in a template spectrum with values from another template, and do it with
@@ -431,7 +422,7 @@ def templateFill(srcTemplate, destTemplate):
             sfs = lowHigh(srcTemplate['centreFrequency'][j], srcTemplate['channelWidth'])
         j -= 1 # Because the breaking point is when the frequency goes too high.
         i = 1
-        while (destTemplate['count'][i] == 0):
+        while (i < (len(destTemplate['count']) - 1) and destTemplate['count'][i] == 0):
             i += 1
         destTemplate['value'][0] = linearInterpolate({ 'value': srcTemplate['value'][j],
                                                        'frequency': srcTemplate['centreFrequency'][j] },
@@ -665,7 +656,7 @@ def calculateRms(tsys, efficiency, opacity, temperature, minHa, maxHa, perHa, nA
 
             # Get the average excess temperature now.
             exTemp = [ row[i] for row in Texcess ]
-            excessTemp = math.fsum(exTemp) / float(len(exTemp))
+            excessTemp = np.sum(exTemp) / float(len(exTemp))
 
             Tmeas = tsys['value'][i] + excessTemp
             TmeasEff = Tmeas / efficiency['value'][i]

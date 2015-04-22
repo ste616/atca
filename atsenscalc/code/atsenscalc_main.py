@@ -76,7 +76,7 @@ def checkArguments(args):
 
     # Check for a specified rest frequency.
     if ('restfreq' in cargs and args.restfreq is not None):
-        restfreq = args.restfreq
+        restfreq = args.restfreq * 1000.0 # Conversion from GHz to MHz.
     elif ('zoomfreq' in cargs and args.zoomfreq is not None):
         # Use the centre frequency of the specified zoom band.
         restfreq = args.zoomfreq
@@ -171,7 +171,7 @@ def main(args):
         if (args.human_readable):
             print "FATAL: ", c.value
         else:
-            print '{ error: "%s" }' % c.value
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
 
     # The number of antenna and baselines.
@@ -209,7 +209,10 @@ def main(args):
         imageWeights = sens.weightingFactor(args.weighting, args.configuration, args.ca06)
     except sens.CalcError:
         _, c, _ = sys.exc_info()
-        print "FATAL: ", c.value
+        if (args.human_readable):
+            print "FATAL: ", c.value
+        else:
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
 
     # Get the lengths of the baselines and determine the maximum baseline length.
@@ -217,7 +220,10 @@ def main(args):
         baselineLengths = sens.maximumBaseline(args.configuration)
     except sens.CalcError:
         _, c, _ = sys.exc_info()
-        print "FATAL: ", c.value
+        if (args.human_readable):
+            print "FATAL: ", c.value
+        else:
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
     maxBaselineLength = baselineLengths['track']
     if (args.ca06):
@@ -255,22 +261,28 @@ def main(args):
     if (args.configuration in [ 'h214', 'H214', 'h168', 'H168', 'h75', 'H75' ]):
         output['parameters']['hybrid'] = True
     # The rest frequency of the spectral line of interest.
-    sens.addToOutput(output, 'parameters', 'reference_rest_frequency', argsInterpreted['restfreq'],
-                "Reference Rest Frequency", "MHz")
+    orf = "%.3f" % argsInterpreted['restfreq']
+    sens.addToOutput(output, 'parameters', 'reference_rest_frequency', orf,
+                     "Reference Rest Frequency", "MHz")
 
     # Source imaging parameters.
     # The declination of the source of interest.
     sens.addToOutput(output, 'source_imaging', 'source_declination', args.dec, "Source Declination", "degrees")
     # The uv weighting scheme to use during imaging.
     sens.addToOutput(output, 'source_imaging', 'weighting_scheme', args.weighting,
-                "Weighting Scheme", None)
+                     "Weighting Scheme", None)
     # And the weighting factors associated with that weighting scheme.
     # The RMS noise level weighting factor, where the factor = 1 for natural weighting.
     sens.addToOutput(output, 'source_imaging', 'weighting_factor', imageWeights['avg'],
-                "RMS noise weighting factor", None)
+                     "RMS noise weighting factor", None)
     # The synthesised beam size weighting factor.
     sens.addToOutput(output, 'source_imaging', 'beam_weighting_factor', imageWeights['beam'],
-                "Synthesised beam weighting factor", None)
+                     "Synthesised beam weighting factor", None)
+    # The maximum baseline length for imaging.
+    mbl = "%.0f" % (math.sqrt(maxBaselineLength['dX'] ** 2 + maxBaselineLength['dY'] ** 2 +
+                              maxBaselineLength['dZ'] ** 2))
+    sens.addToOutput(output, 'source_imaging', 'maximum_baseline_length', mbl,
+                     "Maximum Baseline Length", "m")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -281,14 +293,14 @@ def main(args):
     # These resolutions are the native resolutions made by the correlator, unsmoothed.
     # In the continuum band.
     sens.addToOutput(output, 'continuum', 'correlator_channel_bandwidth', workArea['resolutions']['continuum'],
-                "Correlator Channel Bandwidth", "MHz")
+                     "Correlator Channel Bandwidth", "MHz")
     # For a general zoom.
     sens.addToOutput(output, 'zoom', 'correlator_channel_bandwidth', workArea['resolutions']['zoom'],
-                "Correlator Channel Bandwidth", "MHz")
+                     "Correlator Channel Bandwidth", "MHz")
     if (specificZoomCalc):
         # For the specific zoom (which will be the same as the general zoom).
         sens.addToOutput(output, 'specific_zoom', 'correlator_channel_bandwidth', workArea['resolutions']['zoom'],
-                    "Correlator Channel Bandwidth", "MHz")
+                         "Correlator Channel Bandwidth", "MHz")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -298,13 +310,13 @@ def main(args):
     if (not args.quiet):
         print "MESSAGE: Generating template spectra..."
     workArea['continuum'] = sens.makeTemplate(args.frequency, sens.continuumBandwidth,
-                                         workArea['resolutions']['continuum'])
+                                              workArea['resolutions']['continuum'])
     workArea['alternate'] = sens.makeTemplate((args.frequency - workArea['resolutions']['continuum'] / 2),
-                                         sens.continuumBandwidth, workArea['resolutions']['continuum'])
+                                              sens.continuumBandwidth, workArea['resolutions']['continuum'])
     # Get the lowest and highest frequencies that we will need to read from the files.
     lowGlobalFreq = (workArea['alternate']['centreFrequency'][0] -
                      (workArea['resolutions']['continuum'] / 2.0))
-    highGlobalFreq = (workArea['alternate']['centreFrequency'][-1] +
+    highGlobalFreq = (workArea['continuum']['centreFrequency'][-1] +
                       (workArea['resolutions']['continuum'] / 2.0))
     # Read the Tsys between those frequencies into memory if required.
     b = sens.frequencyBand(args.frequency)
@@ -312,7 +324,10 @@ def main(args):
         cacheTsys = sens.readTsys(sens.frequencyBands[b]['tsys'], lowGlobalFreq, highGlobalFreq)
     except sens.CalcError:
         _, c, _ = sys.exc_info()
-        print "FATAL: ", c.value
+        if (args.human_readable):
+            print "FATAL: ", c.value
+        else:
+            print '{ "error": "%s" }' % c.value
         sys.exit(-1)
     # Use the raw Tsys to fill in the required templates.
     sens.templateFill(cacheTsys, workArea['continuum'])
@@ -333,7 +348,7 @@ def main(args):
             if (offs < closestCentreOffs):
                 closestCentreFreq = workArea['alternate']['centreFrequency'][i]
                 closestCentreOffs = offs
-        # Compute how the bandwidth is distributed around the cente frequency.
+        # Compute how the bandwidth is distributed around the centre frequency.
         bandwidthAbove = (0.125 * (2.0 * float(args.zoom_width) + (-1.0) ** float(args.zoom_width) + 3.0) *
                           workArea['resolutions']['continuum'])
         bandwidthBelow = (0.125 * (2.0 * float(args.zoom_width) - (-1.0) ** float(args.zoom_width) + 1.0) *
@@ -351,19 +366,22 @@ def main(args):
     highestFreq = (workArea['continuum']['centreFrequency'][-(args.edge + 1)] +
                    (workArea['resolutions']['continuum'] / 2))
     sens.addToOutput(output, 'continuum', 'frequency_range', [ lowestFreq, highestFreq ],
-                "Continuum Band Frequency Range", "MHz")
+                     "Continuum Band Frequency Range", "MHz")
+    sens.addToOutput(output, 'zoom', 'n_zooms', args.zoom_width,
+                     "Number of concatenated zoom channels", "channels")
+    sens.addToOutput(output, 'parameters', 'zoom_frequency', args.frequency, "Zoom Frequency", "MHz")
     if (specificZoomCalc):
+        sens.addToOutput(output, 'parameters', 'zoom_frequency', closestCentreFreq, "Specific Zoom Frequency", "MHz")
         # Get the lowest and highest frequencies.
         szoomLowestFreq = (workArea['specificZoom']['centreFrequency'][args.zoom_edge] -
                            (workArea['resolutions']['zoom'] / 2))
         szoomHighestFreq = (workArea['specificZoom']['centreFrequency'][-(args.zoom_edge + 1)] +
                             (workArea['resolutions']['zoom'] / 2))
-        sens.addToOutput(output, 'parameters', 'zoom_frequency', args.zoomfreq, "Specific Zoom Frequency", "MHz")
         sens.addToOutput(output, 'specific_zoom', 'frequency_range', [ szoomLowestFreq, szoomHighestFreq ],
-                    "Specific Zoom Frequency Range", "MHz")
+                         "Specific Zoom Frequency Range", "MHz")
         # The number of zooms used.
         sens.addToOutput(output, 'specific_zoom', 'n_zooms', args.zoom_width,
-                    "Number of concatenated zoom channels", "channels")
+                         "Number of concatenated zoom channels", "channels")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -373,21 +391,21 @@ def main(args):
     # For the continuum bands.
     efficiencyMasterTemplate = sens.templateEfficiency()
     workArea['continuum-efficiency'] = sens.makeTemplate(args.frequency, sens.continuumBandwidth,
-                                                    workArea['resolutions']['continuum'])
+                                                         workArea['resolutions']['continuum'])
     workArea['alternate-efficiency'] = sens.makeTemplate((args.frequency - workArea['resolutions']['continuum'] / 2),
-                                                    sens.continuumBandwidth, workArea['resolutions']['continuum'])
+                                                         sens.continuumBandwidth, workArea['resolutions']['continuum'])
     sens.templateFill(efficiencyMasterTemplate, workArea['continuum-efficiency'])
     sens.templateFill(efficiencyMasterTemplate, workArea['alternate-efficiency'])
     if (specificZoomCalc):
         # For the specific zoom band.
         workArea['specificZoom-efficiency'] = sens.makeTemplate(closestCentreFreq, szBandwidths,
-                                                           workArea['resolutions']['zoom'])
+                                                                workArea['resolutions']['zoom'])
         sens.templateFill(workArea['continuum-efficiency'], workArea['specificZoom-efficiency'])
 
     # Put the average computed efficiencies in the output.
     averageEfficiency = "%.1f" % (sens.averageTemplate(workArea['continuum-efficiency']) * 100.0)
     sens.addToOutput(output, 'parameters', 'antenna_efficiency', float(averageEfficiency),
-                "Antenna Efficiency", "%")
+                     "Antenna Efficiency", "%")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -398,7 +416,7 @@ def main(args):
         print "MESSAGE: Flagging..."
     sens.flagTemplate(workArea['continuum'], 'continuum', args.corrconfig, 0)
     sens.flagTemplate(workArea['continuum'], 'edge', args.corrconfig, args.edge)
-    if (specificZoomCalc == True):
+    if (specificZoomCalc):
         sens.flagTemplate(workArea['specificZoom'], 'edge', args.corrconfig, args.zoom_edge)
     if (args.birdies):
         sens.flagTemplate(workArea['continuum'], 'birdies', args.corrconfig, 0)
@@ -413,10 +431,13 @@ def main(args):
     # The continuum frequency resolution after smoothing.
     contSmoothRes = workArea['resolutions']['continuum'] * float(args.smoothing)
     sens.addToOutput(output, 'source_imaging', 'smoothing_window', args.smoothing,
-                "Smoothing Window", "channels")
+                     "Smoothing Window", "channels")
     # Check that we will end up with at least 2 channels, otherwise we die.
     if ((sens.continuumBandwidth / contSmoothRes) < 2):
-        print "FATAL: Smoothing factor too large."
+        if (args.human_readable):
+            print "FATAL: Smoothing factor too large."
+        else:
+            print '{ "error": "Smoothing factor too large." }'
         sys.exit(-1)
     # Make the smoothed templates and fill them from the unsmoothed templates.
     workArea['continuum-smooth'] = sens.makeTemplate(args.frequency, sens.continuumBandwidth, contSmoothRes)
@@ -424,31 +445,36 @@ def main(args):
     workArea['continuum-efficiency-smooth'] = sens.makeTemplate(args.frequency, sens.continuumBandwidth, contSmoothRes)
     sens.templateFill(workArea['continuum-efficiency'], workArea['continuum-efficiency-smooth'])
     sens.addToOutput(output, 'continuum', 'channel_bandwidth', contSmoothRes,
-                "Channel Bandwidth", "MHz")
+                     "Channel Bandwidth", "MHz")
 
     # The zooms are smoothed by a different argument.
     # The "general" zoom frequency resolution after smoothing.
     zoomSmoothRes = workArea['resolutions']['zoom'] * float(args.zoom_smoothing)
     sens.addToOutput(output, 'source_imaging', 'zoom_smoothing_window', args.zoom_smoothing,
-                "Zoom Smoothing Window", "channels")
-    sens.addToOutput(output, 'zoom', 'channel_bandwidth', zoomSmoothRes,
-                "Channel Bandwidth", "MHz")
+                     "Zoom Smoothing Window", "channels")
+    # The channel bandwidth goes to integer Hz.
+    chbw = "%.6f" % zoomSmoothRes
+    sens.addToOutput(output, 'zoom', 'channel_bandwidth', chbw,
+                     "Channel Bandwidth", "MHz")
     if (specificZoomCalc):
         # The specific zoom will have the exact same frequency resolution.
-        sens.addToOutput(output, 'specific_zoom', 'channel_bandwidth', zoomSmoothRes,
-                    "Channel Bandwidth", "MHz")
+        sens.addToOutput(output, 'specific_zoom', 'channel_bandwidth', chbw,
+                         "Channel Bandwidth", "MHz")
     # We don't want to smooth too much in the zooms either, so we check for that now.
     if ((workArea['resolutions']['continuum'] / zoomSmoothRes) < 2):
-        print "FATAL: Zoom smoothing factor too large."
+        if (args.human_readable):
+            print "FATAL: Zoom smoothing factor too large."
+        else:
+            print '{ "error": "Zoom smoothing factor too large." }'
         sys.exit(-1)
 
     if (specificZoomCalc):
         # Make the specific zoom smoothed template.
         workArea['specificZoom-smooth'] = sens.makeTemplate(closestCentreFreq, szBandwidths,
-                                                       zoomSmoothRes)
+                                                            zoomSmoothRes)
         sens.templateFill(workArea['specificZoom'], workArea['specificZoom-smooth'])
         workArea['specificZoom-efficiency-smooth'] = sens.makeTemplate(closestCentreFreq, szBandwidths,
-                                                                  zoomSmoothRes)
+                                                                       zoomSmoothRes)
         sens.templateFill(workArea['specificZoom-efficiency'], workArea['specificZoom-efficiency-smooth'])
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
     
@@ -477,11 +503,20 @@ def main(args):
     ####################################################################################################
     # Calculate the properties of the synthesised beam.
     # Synthesised beam for the continuum central frequency.
-    synthBeamContinuum = sens.synthesisedBeamSize(args.frequency, maxBaselineLength, args.dec, hourAngle_min,
-                                hourAngle_max, imageWeights['beam'])
+    try:
+        synthBeamContinuum = sens.synthesisedBeamSize(args.frequency, maxBaselineLength, args.dec, hourAngle_min,
+                                                      hourAngle_max, imageWeights['beam'])
+    except ZeroDivisionError:
+        if (args.human_readable):
+            print "FATAL: Cannot observe a declination 0 source with an EW array."
+        else:
+            print '{ "error": "Cannot observe a declination 0 source with an EW array." }'
+        sys.exit(-1)
     sens.addToOutput(output, 'source_imaging', 'synthesised_beam_size', synthBeamContinuum,
                 "Synthesised Beam Size (FWHM)", "arcsec")
-    # The sizes at the high and low frequencies of the continuum band.
+
+    # The sizes at the high and low frequencies of the continuum band. We no longer check for
+    # the returning ZeroDivisionError because if it was going to happen, it would have already happened.
     synthBeamLowFreq = sens.synthesisedBeamSize(lowestFreq, maxBaselineLength, args.dec, hourAngle_min,
                                            hourAngle_max, imageWeights['beam'])
     synthBeamHighFreq = sens.synthesisedBeamSize(highestFreq, maxBaselineLength, args.dec, hourAngle_min,
@@ -504,76 +539,78 @@ def main(args):
     # edge shouldn't be considered as usable bandwidth, we don't consider them as usable
     # for velocity range.
     # The usable frequency bandwidth over the continuum band.
-    contVelBandwidth = sens.continuumBandwidth - 2.0 * float(args.edge) * workArea['resolutions']['continuum']
+    contVelBandwidth = highestFreq - lowestFreq
     # We calculate the velocity span corresponding to that amount of bandwidth with the
     # actual lower frequency.
     sens.addToOutput(output, 'continuum', 'spectral_bandwidth',
-                sens.bandwidthToVelocity(workArea['continuum']['centreFrequency'][args.edge],
-                                    contVelBandwidth, argsInterpreted['restfreq']),
-                "Spectral Bandwidth", "km/s")
+                     sens.bandwidthToVelocity(workArea['continuum']['centreFrequency'][args.edge],
+                                              contVelBandwidth, argsInterpreted['restfreq']),
+                     "Spectral Bandwidth", "km/s")
     # The velocity width of a channel is dependant on its frequency, so we can't give
     # an exact figure for every channel here; we just divide the continuum range by the
     # number of channels here, excluding the edge channels.
     contRes = (output['continuum']['spectral_bandwidth'] / 
                float(len(workArea['continuum']['centreFrequency']) - 2 * args.edge))
     # We now compensate for continuum band smoothing.
-    chanRes = float("%.3f" % (contRes / float(args.smoothing)))
+    chanRes = float("%.3f" % (contRes * float(args.smoothing)))
     sens.addToOutput(output, 'continuum', 'spectral_channel_resolution', chanRes,
-                "Spectral Channel Resolution", "km/s")
+                     "Spectral Channel Resolution", "km/s")
 
     # The velocity width of a "general" zoom band needs to be calculated in the same way
     # since the user may not want the edge channels there.
     # The usable frequency bandwidth over a "general" zoom band.
-    zoomVelBandwidth = (workArea['resolutions']['continuum'] - 
+    nZoomFactor = (float(args.zoom_width) + 1.0) / 2.0
+    zoomVelBandwidth = (nZoomFactor * workArea['resolutions']['continuum'] - 
                         (2.0 * float(args.zoom_edge) * workArea['resolutions']['zoom']))
     sens.addToOutput(output, 'zoom', 'effective_bandwidth', zoomVelBandwidth, 
-                "Effective Bandwidth", "MHz")
+                     "Effective Bandwidth", "MHz")
     # But we can't actually calculate a "general" velocity width that way since it is again
     # frequency dependant. So we just divide up the continuum velocity resolution.
     zoomRes = contRes / float(sens.nZoomChannels)
     # And compensate for zoom band smoothing.
-    zoomChanRes = float("%.3f" % (zoomRes / float(args.zoom_smoothing)))
+    zoomChanRes = float("%.3f" % (zoomRes * float(args.zoom_smoothing)))
     sens.addToOutput(output, 'zoom', 'spectral_channel_resolution', zoomChanRes, "Spectral Channel Resolution",
-                "km/s")
+                     "km/s")
     # The number of channels in the zoom, excluding the edge flagged channels.
-    nZoomVelChans = sens.nZoomChannels - 2 * args.zoom_edge
+    nZoomVelChans = int(zoomVelBandwidth / workArea['resolutions']['zoom'])
     # But we output only the number of smoothed channels.
     sens.addToOutput(output, 'zoom', 'n_channels', (nZoomVelChans / args.zoom_smoothing),
-                "# Channels", None)
+                     "# Channels", None)
     # The zoom velocity width is then just the velocity resolution of each channel multiplied
     # by the number of non-edge channels.
     zoomSpecBandwidth = zoomRes * float(nZoomVelChans)
-    sens.addToOutput(output, 'zoom', 'spectral_bandwidth', zoomSpecBandwidth, "Spectral Bandwidth", "km/s")
+    zsb = "%.3f" % zoomSpecBandwidth
+    sens.addToOutput(output, 'zoom', 'spectral_bandwidth', zsb, "Spectral Bandwidth", "km/s")
 
-    if (specificZoomCalc == True):
+    if (specificZoomCalc):
         # We can actually calculate real velocity values for the specific zoom band, so we
         # do it basically the same as for the continuum band.
         # The frequency bandwidth of the specific zoom takes into account how many zoom
         # channels that the user will consolidate, and the number of channels flagged at the
         # edge.
-        szoomVelBandwidth = (workArea['resolutions']['continuum'] * sum(szBandwidths) - 
-                             (2.0 * float(args.zoom_edge) * workArea['resolutions']['zoom']))
+        szoomVelBandwidth = szoomHighestFreq - szoomLowestFreq
+        szvb = ".3f" % szoomVelBandwidth
         sens.addToOutput(output, 'specific_zoom', 'effective_bandwidth', szoomVelBandwidth, 
-                    "Effective Bandwidth", "MHz")
+                         "Effective Bandwidth", "MHz")
         # The velocity span corresponding to that amount of bandwidth is calculated with
         # respect to the lower frequency of the zoom.
         sens.addToOutput(output, 'specific_zoom', 'spectral_bandwidth',
-                    sens.bandwidthToVelocity(workArea['specificZoom']['centreFrequency'][args.zoom_edge],
-                                        szoomVelBandwidth, argsInterpreted['restfreq']),
-                    "Spectral Bandwidth", "km/s")
+                         sens.bandwidthToVelocity(szoomLowestFreq, szoomVelBandwidth,
+                                                  argsInterpreted['restfreq']),
+                         "Spectral Bandwidth", "km/s")
         # We calculate the number of channels across the consolidated zoom.
-        nszoomChans = int(sum(szBandwidths) * float(sens.nZoomChannels) - float(2 * args.zoom_edge))
+        nszoomChans = int(szoomVelBandwidth / workArea['resolutions']['zoom'])
         # But we output only the number of smoothed channels.
         sens.addToOutput(output, 'specific_zoom', 'n_channels', (nszoomChans / args.zoom_smoothing),
-                    "# Channels", None)
+                         "# Channels", None)
 
         # The velocity resolution is just the velocity span divided by the number of channels,
         # excluding those flagged at the edge.
         szoomRes = (output['specific_zoom']['spectral_bandwidth'] / float(nszoomChans))
         # We compensate for zoom smoothing.
-        szoomChanRes = float("%.3f" % (szoomRes / float(args.zoom_smoothing)))
+        szoomChanRes = float("%.3f" % (szoomRes * float(args.zoom_smoothing)))
         sens.addToOutput(output, 'specific_zoom', 'spectral_channel_resolution', szoomChanRes,
-                    "Spectral Channel Resolution", "km/s")
+                         "Spectral Channel Resolution", "km/s")
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 
@@ -647,11 +684,17 @@ def main(args):
     # This is the frequency resolution of the atmospheric corrections.
     atmosRes = max(workArea['resolutions']['continuum'], args.per_freq)
     sens.addToOutput(output, 'parameters', 'atmosphere_frequency_resolution', atmosRes,
-                "Frequency resolution of atmospheric parameters", "MHz")
+                     "Frequency resolution of atmospheric parameters", "MHz")
     # Include the weather parameters we use in the output.
+    sens.addToOutput(output, 'parameters', 'atmospheric_season', args.season,
+                     'Season for atmospheric calculations', None)
     sens.addToOutput(output, 'parameters', 'atmospheric_conditions', weatherConditions[args.season],
-                "Atmospheric conditions", None)
-    
+                     "Atmospheric conditions", None)
+    # Add the units for temperature, pressure and humidity manually to the output.
+    output['units']['temperature'] = "C"
+    output['units']['humidity'] = "%"
+    output['units']['pressure'] = "hPa"
+
     # Form the opacity and temperature templates for each of the weather conditions
     # (best, typical, worst).
     workArea['opacity'] = {}
@@ -722,7 +765,10 @@ def main(args):
             sensResSmooth = sens.calculateSensitivity(workArea['continuum-smooth-rms'][condition], nant)
             # Check whether we have any unflagged continuum channels.
             if (sensResSmooth['bandwidth']['unflagged'] < 1.0):
-                print "FATAL: No continuum bandwidth remains unflagged."
+                if (args.human_readable):
+                    print "FATAL: No continuum bandwidth remains unflagged."
+                else:
+                    print '{ "error": "No continuum bandwidth remains unflagged." }'
                 sys.exit(-1)
 
             # We get the "general" zoom sensitivity from the unsmoothed continuum data, since smoothing
@@ -902,7 +948,8 @@ def main(args):
                     "Brightness Temperature Sensitivity", "mK")
     # The integration time is added now, since it may have changed if the user asked for a
     # particular sensitivity target.
-    sens.addToOutput(output, 'source_imaging', 'integration_time', args.integration,
+    inttime = "%.0f" % args.integration
+    sens.addToOutput(output, 'source_imaging', 'integration_time', inttime,
                 "Time on Source", "minutes")
 
     #\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
