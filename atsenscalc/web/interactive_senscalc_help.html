@@ -175,7 +175,17 @@
       <div>$u_{\rm max} = | X_{\lambda}\sin(H(u_{\rm max})) + Y_{\lambda}\cos(H(u_{\rm max})) |$,</div>
       and
       <div>$v_{\rm max} = |-X_{\lambda}\sin(\delta)\cos(H(v_{\rm max})) + Y_{\lambda}\sin(\delta)\sin(H(v_{\rm max})) + Z_{\lambda}\cos(\delta)|$,</div>
-      where $\delta$ is the declination of the source being observed.
+      where $\delta$ is the declination of the source being observed.<br />
+      The synthesised beam size in the $l$ and $m$ directions are just the inverse of
+      $u_{\rm max}$ and $v_{\rm max}$ respectively, although they also depend on the
+      weighting scheme used for imaging, so that $w_{\rm beam} = 1$ for Natural weighting,
+      and smaller than that as the weighting tends to Uniform:
+      <div>$l_{res} = \cfrac{w_{\rm beam}}{u_{\rm max}}$,</div>
+      and
+      <div>$m_{res} = \cfrac{w_{\rm beam}}{v_{\rm max}}$.</div>
+      One of $l_{res}$ and $m_{res}$ will usually be smaller than the other, and that
+      is identified as the minor axis resolution $\theta_{\rm min}$, while the other
+      is the major axis resolution $\theta_{\rm maj}$.
     </div>
 
     <div class="helpSection invisible" id="changeLog">
