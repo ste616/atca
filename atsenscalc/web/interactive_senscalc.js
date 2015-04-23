@@ -1011,7 +1011,7 @@ require( [ 'dojo/dom', 'dojo/dom-attr', 'dojo/on', 'dojo/query', 'dojo/store/Mem
 
 	     // The routine to query the server for the calculation.
 	     var serverComms = function(pack) {
-		 return xhr('/cgi-bin/atsenscalc_web.py', {
+		 return xhr('/cgi-bin/obstools/atsenscalc_web.py', {
 		     'data': pack,
 		     'handleAs': 'json',
 		     'method': 'POST'
