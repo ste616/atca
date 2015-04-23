@@ -624,7 +624,7 @@ require([ "dojo/store/Memory", "dijit/form/FilteringSelect", "atnf/base", "dojo/
 		
 		// Start by making our plot area if we haven't already.
 		if (!plotsMade.timeSeries) {
-		    var minTime = '2003-01-01T00:00:00';
+		    var minTime = '1993-01-01T00:00:00';
 		    var maxTime = '2016-01-01T00:00:00';
 		    var minAtime = atnfTime.new({ 'utcString': minTime});
 		    var maxAtime = atnfTime.new({ 'utcString': maxTime});

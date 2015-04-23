@@ -1,9 +1,19 @@
 define([ "dojo/request/xhr", "dojo/_base/lang", "atnf/base", "atnf/angle",
-	 "atnf/skyCoordinate", "atnf/source", "atnf/time" ],
-       function(xhr, lang, atnf, atnfAngle, atnfSkyCoord, atnfSource, atnfTime) {
+	 "atnf/skyCoordinate", "atnf/source", "atnf/time", "dojox/timing" ],
+       function(xhr, lang, atnf, atnfAngle, atnfSkyCoord, atnfSource, atnfTime, timing) {
 	   // The name of the script to call on the server to
 	   // interact with the v3 calibrator database.
 	   var serverScript = '/cgi-bin/Calibrators/new/caldb_v3.pl';
+
+	   // A check for an empty object.
+	   var isEmpty = function(obj) {
+	       for (var prop in obj) {
+		   if (obj.hasOwnProperty(prop)) {
+		       return false;
+		   }
+	       }
+	       return true;
+	   };
 
 	   // The private communication method.
 	   var _comms = function(data) {
@@ -11,6 +21,16 @@ define([ "dojo/request/xhr", "dojo/_base/lang", "atnf/base", "atnf/angle",
 		   'data': data,
 		   'handleAs': 'json',
 		   'method': 'POST'
+	       }).then(function(rdata) {
+		   if (isEmpty(rdata)) {
+		       console.log("Received an empty data set.")
+		       return _comms(data);
+		   }
+		   return rdata;
+	       }, function(err) {
+		   console.log("Received a data transfer error.")
+		   console.log(err);
+		   return _comms(data);
 	       });
 	   };
 	   
