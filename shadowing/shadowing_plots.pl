@@ -75,12 +75,9 @@ my $tlat = $lat / 360.0;
 my $rlat = $lat * $pi / 180.0;
 my $sinlat = sin($rlat);
 my $coslat = cos($rlat);
-#for (my $d = $min_d; $d < $max_d; $d += $interval_d) {
 for (my $di = 0; $di < $nd; $di++) {
     my $d = $min_d + $di * $interval_d;
     my $dt = $d / 360.0;
-    #my $hlist = [];
-    #for (my $h = $min_h; $h < $max_h; $h += $interval_h) {
     my %tellim = ( 'ELLOW' => (12.0 / 360.0) );
     my $halim = haset_azel($dt, $tlat, %tellim);
     for (my $hi = 0; $hi < $nh; $hi++) {
@@ -127,11 +124,6 @@ for (my $di = 0; $di < $nd; $di++) {
 		my $bx = $x2 - $x1;
 		my $by = $y2 - $y1;
 		my $bz = $z2 - $z1;
-		## Calculate the baseline using the antenna pointing.
-		#my $D = sqrt($bx * $bx + $by * $by + $bz * $bz);
-		#my $cx = $D * ($coslat * $sinel - $sinlat * $cosel * $cosaz);
-		#my $cy = $D * ($cosel * $sinaz);
-		#my $cz = $D * ($sinlat * $sinel + $coslat * $cosel * $cosaz);
 		## Calculate uvw.
 		my $bxy = $bx * $sinh + $by * $cosh;
 		my $byx = -$bx * $cosh + $by * $sinh;
@@ -139,32 +131,13 @@ for (my $di = 0; $di < $nd; $di++) {
 		my $v = $byx * $sind + $bz * $cosd;
 		my $w = -$byx * $cosd + $bz * $sind;
 		my $bl = sqrt($u * $u + $v * $v);
-		#if ((($i == 1) || ($j == 1)) && (($i == 2) || ($j == 2))) {
-		    #printf "Dec %.1f, HA = %.3f, az = %.3f, el = %.3f\n", $d, $h, $az, $el;
-		    #printf "%d-%d: (u,v,w) = (%.8f, %.8f, %.8f), length %.1f\n",
-		    #$i, $j, $u, $v, $w, $bl;
-		    #printf " bx, by, bz = %.8f, %.8f, %.8f\n", $bx, $by, $bz;
-		    #printf " cx, cy, cz = %.8f, %.8f, %.8f\n", $cx, $cy, $cz;
-		    #printf " sinh, cosh, sind, cosd = %.8f, %.8f, %.8f, %.8f",
-		    #$sinh, $cosh, $sind, $cosd;
-		#}
 		if (($bl <= $min_length) && ($w > 1e-6)) {
-		    #if ($tshadow == 0) {
-		    #}
-		    #if ((($i == 1) || ($j == 1)) && (($i == 2) || ($j == 2))) {
-			#print " SHADOWED\n";
-		    #}
 		    $tshadow += 1;
-		}# elsif ((($i == 1) || ($j == 1)) && (($i == 2) || ($j == 2))) {
-		    #print "\n";
-		#}
-		#print "\n";
+		}
 	    }
 	}
-	#push @{$hlist}, $tshadow;
 	push @shadowflags, $tshadow;
     }
-    #push @shadowflags, $hlist;
 }
 
 pgopen("testshadowing.png/png");
