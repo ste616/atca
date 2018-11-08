@@ -7,7 +7,7 @@ use PGPLOT;
 use strict;
 
 ## Load the coordinates of each station.
-my $FILEDIR = "/home/ste616/usr/share";
+my $FILEDIR = ".";
 
 ## Now load the coordinates of each station.
 open(STATIONS,"$FILEDIR/station_coordinates.file");
@@ -178,42 +178,3 @@ pggray(\@shadowflags, $nh, $nd, 1, $nh, 1, $nd,
 pglab("declination", "hour angle", "shadowing");
 pgclos();
 
-#sub xyzToLatLon {
-#    my $x = shift;
-#    my $y = shift;
-#    my $z = shift;
-#
-#    my $r = sqrt($x * $x + $y * $y + $z * $z);
-#    my $lat = asin_real($z / $r);
-#    my $lon = atan2($y, $x);
-#
-#    return [ $lat, $lon ];
-#}
-#
-#sub xyzToEnu {
-#    my $x1 = shift;
-#    my $y1 = shift;
-#    my $z1 = shift;
-#    my $x2 = shift;
-#    my $y2 = shift;
-#    my $z2 = shift;
-#
-#    my $latLon = &xyzToLatLon($x1, $y1, $z1);
-#
-#    my $sinLon = sin($latLon[1]);
-#    my $cosLon = cos($latLon[1]);
-#    my $sinLat = sin($latLon[0]);
-#    my $cosLat = cos($latLon[0]);
-#
-#    my $dx = $x2 - $x1;
-#    my $dy = $y2 - $y1;
-#    my $dz = $z2 - $z1;
-#
-#    my $enu = [
-#	-1 * $sinLon * $dx + $cosLon * $dy,
-#	-1 * $sinLat * $cosLon * $dx - $sinLat * $sinLon * $dy + $cosLat * $dz,
-#	$cosLat * $cosLon * $dx + $cosLat * $sinLon * $dy + $sinLat * $dz
-#	];
-#
-#    return $enu;
-#}
