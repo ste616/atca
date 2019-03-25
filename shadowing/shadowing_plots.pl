@@ -53,7 +53,7 @@ while(<ARRAYS>){
 close(ARRAYS);
 
 ## Pick an array with a high likelihood of shadowing.
-my $badarray = "H168";
+my $badarray = "H75";
 ## Which stations are in that array?
 my $array = $configurations{$badarray};
 
